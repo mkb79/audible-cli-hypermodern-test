@@ -1,12 +1,8 @@
-"""Command-line interface."""
-import click
+import sys
 
-
-@click.command()
-@click.version_option()
-def main() -> None:
-    """Audible Cli Hypermodern Test."""
-
+from . import cli
 
 if __name__ == "__main__":
-    main(prog_name="audible-cli-hypermodern-test")  # pragma: no cover
+    sys.exit(
+        cli.main(prog_name="python -m audible_cli")
+    )
