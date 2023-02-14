@@ -89,8 +89,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
-        fail-fast: false
         include:
           - os: ubuntu-latest
             TARGET: linux
