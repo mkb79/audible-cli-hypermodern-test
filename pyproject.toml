@@ -32,7 +32,7 @@ classifiers = [
 Changelog = "https://github.com/mkb79/audible-cli-hypermodern-test/releases"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = ">=3.7,<3.12"
 click = ">=8.0.1"
 audible = ">=0.8.2"
 aiofiles = ">=23.1.0"
@@ -74,6 +74,9 @@ myst-parser = {version = ">=0.16.1"}
 [tool.poetry.scripts]
 audible = "audible_cli:main"
 audible-quickstart = "audible_cli:quickstart"
+
+[tool.poetry.group.dev.dependencies]
+pyinstaller = "^5.8.0"
 
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]
