@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "audible-cli-hypermodern-test"
-version = "0.0.0"
+version = "0.2.4"
 description = "Audible Cli Hypermodern Test"
 authors = ["mkb79 <mkb79@hackitall.de>"]
 license = "AGPL-3.0-only"
@@ -75,6 +75,8 @@ pyinstaller = ">=5.8.0"
 [tool.poetry.scripts]
 audible = "audible_cli:main"
 audible-quickstart = "audible_cli:quickstart"
+
+[tool.poetry_bumpversion.file."src/audible_cli/__init__.py"]
 
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]
