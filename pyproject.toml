@@ -45,7 +45,7 @@ tqdm = ">=4.64.1"
 questionary = ">=1.10.0"
 colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"
 black = ">=21.10b0"
 coverage = {extras = ["toml"], version = ">=6.2"}
@@ -70,13 +70,11 @@ sphinx-click = ">=3.0.2"
 typeguard = ">=2.13.3"
 xdoctest = {extras = ["colors"], version = ">=0.15.10"}
 myst-parser = {version = ">=0.16.1"}
+pyinstaller = ">=5.8.0"
 
 [tool.poetry.scripts]
 audible = "audible_cli:main"
 audible-quickstart = "audible_cli:quickstart"
-
-[tool.poetry.group.dev.dependencies]
-pyinstaller = "^5.8.0"
 
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]
