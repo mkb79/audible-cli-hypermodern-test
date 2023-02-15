@@ -23,6 +23,10 @@ categories:
     labels:
       - "dependencies"
       - "build"
+exclude-labels:
+  - "skip-changelog"
+exclude-contributors:
+  - 'mkb79'
 template: |
   ## Changes
 

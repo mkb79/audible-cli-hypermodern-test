@@ -61,6 +61,9 @@
 - name: testing
   description: Testing
   color: b1fc6f
+- name: skip-changelog
+  description: Skip pull request from release notes
+  color: 964B00
 - name: wontfix
   description: This will not be worked on
   color: ffffff
