@@ -10,6 +10,9 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.check-version.outputs.tag }}
+      upload_url: ${{ steps.create-release.outputs.upload_url }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v3
@@ -82,8 +85,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Add assets for published releases
-        if: steps.check-version.outputs.tag
-        uses: ./.github/workflows/add-assets-workflow-call.yml
-        with:
-          upload_url: ${{ steps.create-release.outputs.upload_url }}
+  build:
+    name: Build packages
+    needs: release
+    if: needs.release.outputs.tag
+    uses: ./.github/workflows/add-assets-workflow-call.yml
+    with:
+      upload_url: ${{ needs.release.outputs.upload_url }}

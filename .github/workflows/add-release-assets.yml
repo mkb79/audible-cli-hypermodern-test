@@ -8,11 +8,6 @@ on:
 jobs:
   build:
     name: Build packages
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
- 
-      - name: Add assets for published releases
-        uses: ./.github/workflows/add-assets-workflow-call.yml
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
+    uses: ./.github/workflows/add-assets-workflow-call.yml
+    with:
+      upload_url: ${{ github.event.release.upload_url }}
