@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "audible-cli-hypermodern-test"
-version = "0.2.6"
+version = "0.2.7"
 description = "Audible Cli Hypermodern Test"
 authors = ["mkb79 <mkb79@hackitall.de>"]
 license = "AGPL-3.0-only"
