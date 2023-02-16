@@ -2174,6 +2174,69 @@ doc = ["sphinx-autodoc-typehints (>=1.2.0)", "sphinx-rtd-theme"]
 test = ["mypy", "pytest", "typing-extensions"]
 
 [[package]]
+name = "types-aiofiles"
+version = "22.1.0.8"
+description = "Typing stubs for aiofiles"
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-aiofiles-22.1.0.8.tar.gz", hash = "sha256:841ef2a69091be3ea798b8928c96e9368f3e1e22c2899fde62120b359b03927f"},
+    {file = "types_aiofiles-22.1.0.8-py3-none-any.whl", hash = "sha256:10c733cb87f820c7b2d7ac949a7553d2704020d1359ba6a5e187b96f3037b4c0"},
+]
+
+[[package]]
+name = "types-docutils"
+version = "0.19.1.4"
+description = "Typing stubs for docutils"
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-docutils-0.19.1.4.tar.gz", hash = "sha256:1b64b21b609ff1fc7791d3d930f14b56b36ad09029fd97e45e34cc889d671b5f"},
+    {file = "types_docutils-0.19.1.4-py3-none-any.whl", hash = "sha256:870d71f3663141f67a3c59d26d2c54a8c478c842208bb0b345fbf6036f49f561"},
+]
+
+[[package]]
+name = "types-setuptools"
+version = "67.3.0.1"
+description = "Typing stubs for setuptools"
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-setuptools-67.3.0.1.tar.gz", hash = "sha256:1a26d373036c720e566823b6edd664a2db4d138b6eeba856721ec1254203474f"},
+    {file = "types_setuptools-67.3.0.1-py3-none-any.whl", hash = "sha256:a7e0f0816b5b449f5bcdc0efa43da91ff81dbe6941f293a6490d68a450e130a1"},
+]
+
+[package.dependencies]
+types-docutils = "*"
+
+[[package]]
+name = "types-tabulate"
+version = "0.9.0.0"
+description = "Typing stubs for tabulate"
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-tabulate-0.9.0.0.tar.gz", hash = "sha256:4a79474714cea156bcd2185bb9bddd8fb9d3d5227c8d0a7f21bf21caf5f60e67"},
+    {file = "types_tabulate-0.9.0.0-py3-none-any.whl", hash = "sha256:a1cc2aa52d2a9abfe0acbb361ccd49e3400794086a41626ce8784ed2e1ec0b0d"},
+]
+
+[[package]]
+name = "types-toml"
+version = "0.10.8.4"
+description = "Typing stubs for toml"
+category = "dev"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-toml-0.10.8.4.tar.gz", hash = "sha256:c8748dd225b28eb80ce712e2d7d61b57599815e7b48d07ef53df51ed148fa6b1"},
+    {file = "types_toml-0.10.8.4-py3-none-any.whl", hash = "sha256:306b1bb8b5bbc5f1b60387dbcc4b489e79f8490ce20e93af5f422a68b470d94b"},
+]
+
+[[package]]
 name = "typing-extensions"
 version = "4.5.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
@@ -2285,4 +2348,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.7,<3.12"
-content-hash = "0cc6cd93481f8b77bfcdc3b83861cdb41b273eb3d1ac95677eae52df5a8b85e9"
+content-hash = "1c093cc8ec4e05cb69eb875b0c5bc9ab51f25cbaab2abf5c925af1a305c2655a"

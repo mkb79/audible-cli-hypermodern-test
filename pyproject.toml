@@ -71,6 +71,10 @@ typeguard = ">=2.13.3"
 xdoctest = {extras = ["colors"], version = ">=0.15.10"}
 myst-parser = {version = ">=0.16.1"}
 pyinstaller = ">=5.8.0"
+types-aiofiles = ">=22.1.0.8"
+types-tabulate = ">=0.9.0.0"
+types-toml = ">=0.10.8.4"
+types-setuptools = ">=67.3.0.1"
 
 [tool.poetry.scripts]
 audible = "audible_cli:main"
