@@ -1,6 +1,6 @@
 import click
-
 from audible.exceptions import NotFoundError
+
 from audible_cli.decorators import pass_client
 
 

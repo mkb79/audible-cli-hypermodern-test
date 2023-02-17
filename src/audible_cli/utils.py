@@ -10,11 +10,11 @@ import aiofiles
 import click
 import httpx
 import tqdm
-from PIL import Image
 from audible import Authenticator
 from audible.client import raise_for_status
 from audible.login import default_login_url_callback
-from click import echo, secho, prompt
+from click import echo, prompt, secho
+from PIL import Image
 
 from .constants import DEFAULT_AUTH_FILE_ENCRYPTION
 

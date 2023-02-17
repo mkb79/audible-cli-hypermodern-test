@@ -15,8 +15,9 @@ from functools import reduce
 from shutil import which
 
 import click
-from audible_cli.decorators import pass_session
 from click import echo, secho
+
+from audible_cli.decorators import pass_session
 
 
 class ApiMeta:

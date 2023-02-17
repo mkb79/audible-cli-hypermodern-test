@@ -8,7 +8,7 @@ import httpx
 import questionary
 from click import echo
 
-from ..decorators import timeout_option, pass_client, wrap_async
+from ..decorators import pass_client, timeout_option, wrap_async
 from ..models import Catalog, Wishlist
 from ..utils import export_to_csv
 

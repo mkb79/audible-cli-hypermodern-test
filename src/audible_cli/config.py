@@ -15,7 +15,7 @@ from .constants import (
     CONFIG_FILE,
     DEFAULT_CONFIG_DATA,
     PLUGIN_DIR_ENV,
-    PLUGIN_PATH
+    PLUGIN_PATH,
 )
 from .exceptions import AudibleCliException, ProfileAlreadyExists
 

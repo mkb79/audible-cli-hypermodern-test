@@ -9,6 +9,7 @@ import pathlib
 
 import audible
 import click
+
 from audible_cli.config import pass_session
 
 

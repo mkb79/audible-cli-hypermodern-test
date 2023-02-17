@@ -6,10 +6,10 @@ import click
 import httpx
 from packaging.version import parse
 
+from . import __version__
+from ._logging import _normalize_logger
 from .config import Session
 from .utils import datetime_type
-from ._logging import _normalize_logger
-from . import __version__
 
 
 logger = logging.getLogger("audible_cli.options")

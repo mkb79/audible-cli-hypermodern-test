@@ -15,12 +15,12 @@ from audible.client import convert_response_content
 from .constants import CODEC_HIGH_QUALITY, CODEC_NORMAL_QUALITY
 from .exceptions import (
     AudibleCliException,
+    ItemNotPublished,
     LicenseDenied,
     NoDownloadUrl,
     NotDownloadableAsAAX,
-    ItemNotPublished
 )
-from .utils import full_response_callback, LongestSubString
+from .utils import LongestSubString, full_response_callback
 
 
 logger = logging.getLogger("audible_cli.models")

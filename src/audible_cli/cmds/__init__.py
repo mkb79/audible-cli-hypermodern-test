@@ -7,8 +7,9 @@ from . import (
     cmd_library,
     cmd_manage,
     cmd_quickstart,
-    cmd_wishlist
+    cmd_wishlist,
 )
+
 
 cli_cmds = [
     cmd_activation_bytes.cli,
