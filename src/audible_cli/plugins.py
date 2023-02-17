@@ -7,7 +7,7 @@ import pathlib
 import sys
 import traceback
 from importlib import import_module
-from typing import Union
+from typing import Generator, Union
 
 import click
 
@@ -54,7 +54,7 @@ def from_folder(plugin_dir: Union[str, pathlib.Path]):
     return decorator
 
 
-def from_entry_point(entry_point_group: str):
+def from_entry_point(entry_point_group: Generator):
     """
     A decorator to register external CLI commands to an instance of
     `click.Group()`.
