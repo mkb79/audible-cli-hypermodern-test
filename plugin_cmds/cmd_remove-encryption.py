@@ -1,5 +1,5 @@
 """
-This is a proof-of-concept and for testing purposes only. No error handling. 
+This is a proof-of-concept and for testing purposes only. No error handling.
 Need further work. Some options do not work or options are missing.
 
 Needs at least ffmpeg 4.4
@@ -38,27 +38,35 @@ class ApiMeta:
     def get_chapters(self):
         def extract_chapters(initial, current):
             if "chapters" in current:
-                return initial + [current] + current['chapters']
+                return initial + [current] + current["chapters"]
             else:
                 return initial + [current]
 
-        return list(reduce(extract_chapters, self._meta_parsed["content_metadata"]["chapter_info"]["chapters"], []))
+        return list(
+            reduce(
+                extract_chapters,
+                self._meta_parsed["content_metadata"]["chapter_info"]["chapters"],
+                [],
+            )
+        )
 
     def get_intro_duration_ms(self):
         return self._meta_parsed["content_metadata"]["chapter_info"][
-            "brandIntroDurationMs"]
+            "brandIntroDurationMs"
+        ]
 
     def get_outro_duration_ms(self):
         return self._meta_parsed["content_metadata"]["chapter_info"][
-            "brandOutroDurationMs"]
+            "brandOutroDurationMs"
+        ]
 
     def get_runtime_length_ms(self):
         return self._meta_parsed["content_metadata"]["chapter_info"][
-            "runtime_length_ms"]
+            "runtime_length_ms"
+        ]
 
     def is_accurate(self):
-        return self._meta_parsed["content_metadata"]["chapter_info"][
-            "is_accurate"]
+        return self._meta_parsed["content_metadata"]["chapter_info"]["is_accurate"]
 
 
 class FFMeta:
@@ -111,12 +119,11 @@ class FFMeta:
             elif section == "CHAPTER":
                 # TODO: Tue etwas
                 for chapter in self._ffmeta_parsed[section]:
-                    self._write_section(fp, section,
-                                        self._ffmeta_parsed[section][chapter],
-                                        d)
+                    self._write_section(
+                        fp, section, self._ffmeta_parsed[section][chapter], d
+                    )
             else:
-                self._write_section(fp, section, self._ffmeta_parsed[section],
-                                    d)
+                self._write_section(fp, section, self._ffmeta_parsed[section], d)
 
     @staticmethod
     def _write_section(fp, section_name, section_items, delimiter):
@@ -157,18 +164,24 @@ class FFMeta:
             outro_dur_ms = api_meta.get_outro_duration_ms()
             last["length_ms"] -= outro_dur_ms
 
-            api_chapters.append({
-                "length_ms": intro_dur_ms,
-                "start_offset_ms": 0,
-                "start_offset_sec": 0,
-                "title": "Intro"
-            })
-            api_chapters.append({
-                "length_ms": outro_dur_ms,
-                "start_offset_ms": api_meta.get_runtime_length_ms() - outro_dur_ms,
-                "start_offset_sec": round((api_meta.get_runtime_length_ms() - outro_dur_ms) / 1000),
-                "title": "Outro"
-            })
+            api_chapters.append(
+                {
+                    "length_ms": intro_dur_ms,
+                    "start_offset_ms": 0,
+                    "start_offset_sec": 0,
+                    "title": "Intro",
+                }
+            )
+            api_chapters.append(
+                {
+                    "length_ms": outro_dur_ms,
+                    "start_offset_ms": api_meta.get_runtime_length_ms() - outro_dur_ms,
+                    "start_offset_sec": round(
+                        (api_meta.get_runtime_length_ms() - outro_dur_ms) / 1000
+                    ),
+                    "title": "Outro",
+                }
+            )
             api_chapters.sort(key=operator.itemgetter("start_offset_ms"))
 
         num_chap = 0
@@ -181,14 +194,17 @@ class FFMeta:
                 "TIMEBASE": "1/1000",
                 "START": chap_start,
                 "END": chap_end,
-                "title": chapter["title"]
+                "title": chapter["title"],
             }
         self._ffmeta_parsed["CHAPTER"] = new_chapters
 
 
 def decrypt_aax(
-        files, activation_bytes, rebuild_chapters, ignore_missing_chapters,
-        separate_intro_outro
+    files,
+    activation_bytes,
+    rebuild_chapters,
+    ignore_missing_chapters,
+    separate_intro_outro,
 ):
     for file in files:
         outfile = file.with_suffix(".m4b")
@@ -215,24 +231,33 @@ def decrypt_aax(
 
             if has_chapters:
                 if not content_metadata["content_metadata"]["chapter_info"][
-                        "is_accurate"]:
+                    "is_accurate"
+                ]:
                     secho(f"Chapter data are not accurate", fg="red")
                 else:
                     can_rebuild_chapters = True
 
-        if rebuild_chapters and not can_rebuild_chapters and not ignore_missing_chapters:
+        if (
+            rebuild_chapters
+            and not can_rebuild_chapters
+            and not ignore_missing_chapters
+        ):
             secho(f"Skip {file.name}: chapter data can not be rebuild", fg="red")
             continue
 
         if can_rebuild_chapters:
             cmd = [
                 "ffmpeg",
-                "-v", "quiet",
+                "-v",
+                "quiet",
                 "-stats",
-                "-activation_bytes", activation_bytes,
-                "-i", str(file),
-                "-f", "ffmetadata",
-                str(metafile)
+                "-activation_bytes",
+                activation_bytes,
+                "-i",
+                str(file),
+                "-f",
+                "ffmetadata",
+                str(metafile),
             ]
             subprocess.check_output(cmd, text=True)
 
@@ -245,15 +270,22 @@ def decrypt_aax(
 
             cmd = [
                 "ffmpeg",
-                "-v", "quiet",
+                "-v",
+                "quiet",
                 "-stats",
-                "-activation_bytes", activation_bytes,
-                "-i", str(file),
-                "-i", str(metafile_new),
-                "-map_metadata", "0",
-                "-map_chapters", "1",
-                "-c", "copy",
-                str(outfile)
+                "-activation_bytes",
+                activation_bytes,
+                "-i",
+                str(file),
+                "-i",
+                str(metafile_new),
+                "-map_metadata",
+                "0",
+                "-map_chapters",
+                "1",
+                "-c",
+                "copy",
+                str(outfile),
             ]
             subprocess.check_output(cmd, text=True)
             metafile.unlink()
@@ -261,12 +293,16 @@ def decrypt_aax(
         else:
             cmd = [
                 "ffmpeg",
-                "-v", "quiet",
+                "-v",
+                "quiet",
                 "-stats",
-                "-activation_bytes", activation_bytes,
-                "-i", str(file),
-                "-c", "copy",
-                str(outfile)
+                "-activation_bytes",
+                activation_bytes,
+                "-i",
+                str(file),
+                "-c",
+                "copy",
+                str(outfile),
             ]
             subprocess.check_output(cmd, text=True)
 
@@ -274,7 +310,7 @@ def decrypt_aax(
 
 
 def decrypt_aaxc(
-        files, rebuild_chapters, ignore_missing_chapters, separate_intro_outro
+    files, rebuild_chapters, ignore_missing_chapters, separate_intro_outro
 ):
     for file in files:
         outfile = file.with_suffix(".m4b")
@@ -313,47 +349,65 @@ def decrypt_aaxc(
 
             if has_chapters:
                 if not content_metadata["content_metadata"]["chapter_info"][
-                        "is_accurate"]:
+                    "is_accurate"
+                ]:
                     secho(f"Chapter data are not accurate", fg="red")
                 else:
                     can_rebuild_chapters = True
 
-        if rebuild_chapters and not can_rebuild_chapters and not ignore_missing_chapters:
+        if (
+            rebuild_chapters
+            and not can_rebuild_chapters
+            and not ignore_missing_chapters
+        ):
             secho(f"Skip {file.name}: chapter data can not be rebuild", fg="red")
             continue
 
         if can_rebuild_chapters:
             cmd = [
                 "ffmpeg",
-                "-v", "quiet",
+                "-v",
+                "quiet",
                 "-stats",
-                "-audible_key", audible_key,
-                "-audible_iv", audible_iv,
-                "-i", str(file),
-                "-f", "ffmetadata",
-                str(metafile)
+                "-audible_key",
+                audible_key,
+                "-audible_iv",
+                audible_iv,
+                "-i",
+                str(file),
+                "-f",
+                "ffmetadata",
+                str(metafile),
             ]
             subprocess.check_output(cmd, text=True)
-    
+
             ffmeta_class = FFMeta(metafile)
             ffmeta_class.update_chapters_from_api_meta(
                 content_metadata, separate_intro_outro
             )
             ffmeta_class.write(metafile_new)
             click.echo("Replaced all titles.")
-    
+
             cmd = [
                 "ffmpeg",
-                "-v", "quiet",
+                "-v",
+                "quiet",
                 "-stats",
-                "-audible_key", audible_key,
-                "-audible_iv", audible_iv,
-                "-i", str(file),
-                "-i", str(metafile_new),
-                "-map_metadata", "0",
-                "-map_chapters", "1",
-                "-c", "copy",
-                str(outfile)
+                "-audible_key",
+                audible_key,
+                "-audible_iv",
+                audible_iv,
+                "-i",
+                str(file),
+                "-i",
+                str(metafile_new),
+                "-map_metadata",
+                "0",
+                "-map_chapters",
+                "1",
+                "-c",
+                "copy",
+                str(outfile),
             ]
             subprocess.check_output(cmd, text=True)
             metafile.unlink()
@@ -361,13 +415,18 @@ def decrypt_aaxc(
         else:
             cmd = [
                 "ffmpeg",
-                "-v", "quiet",
+                "-v",
+                "quiet",
                 "-stats",
-                "-audible_key", audible_key,
-                "-audible_iv", audible_iv,
-                "-i", str(file),
-                "-c", "copy",
-                str(outfile)
+                "-audible_key",
+                audible_key,
+                "-audible_iv",
+                audible_iv,
+                "-i",
+                str(file),
+                "-c",
+                "copy",
+                str(outfile),
             ]
             subprocess.check_output(cmd, text=True)
 
@@ -379,37 +438,31 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 @click.command("remove-encryption", context_settings=CONTEXT_SETTINGS)
 @click.option(
-    "--input", "-i",
+    "--input",
+    "-i",
     type=click.Path(exists=True, file_okay=True),
     multiple=True,
-    help="Input file")
+    help="Input file",
+)
+@click.option("--all", "-a", is_flag=True, help="convert all files in folder")
+@click.option("--overwrite", is_flag=True, help="overwrite existing files")
 @click.option(
-    "--all", "-a",
-    is_flag=True,
-    help="convert all files in folder"
+    "--rebuild-chapters", "-r", is_flag=True, help="Rebuild chapters from chapter file"
 )
 @click.option(
-    "--overwrite",
+    "--separate-intro-outro",
+    "-s",
     is_flag=True,
-    help="overwrite existing files"
+    help="Separate Audible Brand Intro and Outro to own Chapter. Only use with `--rebuild-chapters`.",
 )
 @click.option(
-    "--rebuild-chapters", "-r",
-    is_flag=True,
-    help="Rebuild chapters from chapter file"
-)
-@click.option(
-    "--separate-intro-outro", "-s",
-    is_flag=True,
-    help="Separate Audible Brand Intro and Outro to own Chapter. Only use with `--rebuild-chapters`."
-)
-@click.option(
-    "--ignore-missing-chapters", "-t", 
+    "--ignore-missing-chapters",
+    "-t",
     is_flag=True,
     help=(
         "Decrypt without rebuilding chapters when chapters are not present. "
         "Otherwise an item is skipped when this option is not provided. Only use with `--rebuild-chapters`."
-    )
+    ),
 )
 @pass_session
 def cli(session, **options):
@@ -421,13 +474,13 @@ def cli(session, **options):
     ignore_missing_chapters = options.get("ignore_missing_chapters")
     separate_intro_outro = options.get("separate_intro_outro")
 
-    jobs = {"aaxc": [], "aax":[]}
+    jobs = {"aaxc": [], "aax": []}
 
     if options.get("all"):
         cwd = pathlib.Path.cwd()
-        jobs["aaxc"].extend(list(cwd.glob('*.aaxc')))
-        jobs["aax"].extend(list(cwd.glob('*.aax')))
-        
+        jobs["aaxc"].extend(list(cwd.glob("*.aaxc")))
+        jobs["aax"].extend(list(cwd.glob("*.aax")))
+
     else:
         for file in options.get("input"):
             file = pathlib.Path(file).resolve()
@@ -439,15 +492,13 @@ def cli(session, **options):
                 secho(f"file suffix {file.suffix} not supported", fg="red")
 
     decrypt_aaxc(
-        jobs["aaxc"],
-        rebuild_chapters,
-        ignore_missing_chapters,
-        separate_intro_outro
+        jobs["aaxc"], rebuild_chapters, ignore_missing_chapters, separate_intro_outro
     )
 
     decrypt_aax(
         jobs["aax"],
-        session.auth.activation_bytes, rebuild_chapters,
+        session.auth.activation_bytes,
+        rebuild_chapters,
         ignore_missing_chapters,
-        separate_intro_outro
+        separate_intro_outro,
     )

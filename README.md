@@ -21,7 +21,7 @@
 [pre-commit]: https://github.com/pre-commit/pre-commit
 [black]: https://github.com/psf/black
 
-* Testing repo for implementing CI+CD *
+_Testing repo for implementing CI+CD_
 
 ## Features
 

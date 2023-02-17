@@ -14,9 +14,11 @@ logger = logging.getLogger("audible_cli.cmds.cmd_activation_bytes")
 
 @click.command("activation-bytes")
 @click.option(
-    "--reload", "-r",
+    "--reload",
+    "-r",
     is_flag=True,
-    help="Reload activation bytes and save to auth file.")
+    help="Reload activation bytes and save to auth file.",
+)
 @pass_session
 def cli(session, **options):
     """Get activation bytes."""

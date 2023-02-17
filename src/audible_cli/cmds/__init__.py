@@ -18,7 +18,7 @@ cli_cmds = [
     cmd_library.cli,
     cmd_manage.cli,
     cmd_quickstart.cli,
-    cmd_wishlist.cli
+    cmd_wishlist.cli,
 ]
 
 
@@ -31,11 +31,11 @@ def build_in_cmds(func=None):
     -------
     click.Group()
     """
+
     def decorator(group):
         if not isinstance(group, click.Group):
             raise TypeError(
-                "Plugins can only be attached to an instance of "
-                "click.Group()"
+                "Plugins can only be attached to an instance of click.Group()"
             )
 
         for cmd in cli_cmds:
