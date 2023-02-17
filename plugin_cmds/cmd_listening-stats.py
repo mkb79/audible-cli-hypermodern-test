@@ -15,8 +15,8 @@ current_year = datetime.now().year
 
 def ms_to_hms(milliseconds):
     seconds = int((milliseconds / 1000) % 60)
-    minutes = int(((milliseconds / (1000*60)) % 60))
-    hours = int(((milliseconds / (1000*60*60)) % 24))
+    minutes = int((milliseconds / (1000*60)) % 60)
+    hours = int((milliseconds / (1000*60*60)) % 24)
     return {"hours": hours, "minutes": minutes, "seconds": seconds}
 
 

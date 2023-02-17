@@ -233,7 +233,7 @@ def decrypt_aax(
                 "-f", "ffmetadata",
                 str(metafile)
             ]
-            subprocess.check_output(cmd, universal_newlines=True)
+            subprocess.check_output(cmd, text=True)
 
             ffmeta_class = FFMeta(metafile)
             ffmeta_class.update_chapters_from_api_meta(
@@ -254,7 +254,7 @@ def decrypt_aax(
                 "-c", "copy",
                 str(outfile)
             ]
-            subprocess.check_output(cmd, universal_newlines=True)
+            subprocess.check_output(cmd, text=True)
             metafile.unlink()
             metafile_new.unlink()
         else:
@@ -267,7 +267,7 @@ def decrypt_aax(
                 "-c", "copy",
                 str(outfile)
             ]
-            subprocess.check_output(cmd, universal_newlines=True)
+            subprocess.check_output(cmd, text=True)
 
         echo(f"File decryption successful: {outfile.name}")
 
@@ -332,7 +332,7 @@ def decrypt_aaxc(
                 "-f", "ffmetadata",
                 str(metafile)
             ]
-            subprocess.check_output(cmd, universal_newlines=True)
+            subprocess.check_output(cmd, text=True)
     
             ffmeta_class = FFMeta(metafile)
             ffmeta_class.update_chapters_from_api_meta(
@@ -354,7 +354,7 @@ def decrypt_aaxc(
                 "-c", "copy",
                 str(outfile)
             ]
-            subprocess.check_output(cmd, universal_newlines=True)
+            subprocess.check_output(cmd, text=True)
             metafile.unlink()
             metafile_new.unlink()
         else:
@@ -368,7 +368,7 @@ def decrypt_aaxc(
                 "-c", "copy",
                 str(outfile)
             ]
-            subprocess.check_output(cmd, universal_newlines=True)
+            subprocess.check_output(cmd, text=True)
 
         echo(f"File decryption successful: {outfile.name}")
 
