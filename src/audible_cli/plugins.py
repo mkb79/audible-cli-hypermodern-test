@@ -34,7 +34,7 @@ def from_folder(plugin_dir: Union[str, pathlib.Path]):
             )
 
         pdir = pathlib.Path(plugin_dir)
-        cmds = [x for x in pdir.glob("cmd_*.py")]
+        cmds = list(pdir.glob("cmd_*.py"))
         sys.path.insert(0, str(pdir.resolve()))
 
         for cmd in cmds:
