@@ -1,4 +1,3 @@
-import asyncio
 import csv
 import io
 import logging
@@ -35,7 +34,6 @@ datetime_type = click.DateTime(
 
 def prompt_captcha_callback(captcha_url: str) -> str:
     """Helper function for handling captcha."""
-
     echo("Captcha found")
     if click.confirm("Open Captcha with default image viewer", default=True):
         captcha = httpx.get(captcha_url).content
@@ -52,7 +50,6 @@ def prompt_captcha_callback(captcha_url: str) -> str:
 
 def prompt_otp_callback() -> str:
     """Helper function for handling 2-factor authentication."""
-
     echo("2FA is activated for this account.")
     guess = prompt("Please enter OTP Code")
     return str(guess).strip().lower()

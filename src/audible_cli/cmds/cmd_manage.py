@@ -36,14 +36,14 @@ def manage_auth_files():
 @manage_config.command("edit")
 @pass_session
 def config_editor(session):
-    """Open the config file with default editor"""
+    """Open the config file with default editor."""
     click.edit(filename=session.config.filename)
 
 
 @manage_profiles.command("list")
 @pass_session
 def list_profiles(session):
-    """List all profiles in the config file"""
+    """List all profiles in the config file."""
     head = ["P", "Profile", "auth file", "cc"]
     config = session.config
     profiles = config.data.get("profile")
@@ -90,7 +90,7 @@ def list_profiles(session):
 @pass_session
 @click.pass_context
 def add_profile(ctx, session, profile, country_code, auth_file, is_primary):
-    """Adds a profile to config file"""
+    """Adds a profile to config file."""
     if not (session.config.dirname / auth_file).exists():
         logger.error("Auth file doesn't exists")
         raise click.Abort()
@@ -113,7 +113,7 @@ def add_profile(ctx, session, profile, country_code, auth_file, is_primary):
 )
 @pass_session
 def remove_profile(session, profile):
-    """Remove one or multiple profile(s) from config file"""
+    """Remove one or multiple profile(s) from config file."""
     profiles = session.config.data.get("profile")
     for p in profile:
         if p not in profiles:
@@ -183,7 +183,7 @@ def add_auth_file(
     external_login,
     with_username,
 ):
-    """Register a new device and add an auth file to config dir"""
+    """Register a new device and add an auth file to config dir."""
     build_auth_file(
         filename=session.config.dirname / auth_file,
         username=audible_username,
@@ -215,7 +215,7 @@ def check_if_auth_file_exists(session, ctx, param, value):
 )
 @click.option("--password", "-p", help="The optional password for the auth file.")
 def remove_auth_file(auth_file, password):
-    """Deregister a device and remove auth file from config dir"""
+    """Deregister a device and remove auth file from config dir."""
     auth = Authenticator.from_file(auth_file, password)
     device_name = auth.device_info["device_name"]
     auth.refresh_access_token()

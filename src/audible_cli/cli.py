@@ -41,7 +41,7 @@ def cli():
 @version_option
 @verbosity_option(cli_logger=logger)
 def quickstart(ctx):
-    """Entrypoint for the quickstart command"""
+    """Entrypoint for the quickstart command."""
     try:
         sys.exit(ctx.forward(cmd_quickstart.cli))
     except click.Abort:

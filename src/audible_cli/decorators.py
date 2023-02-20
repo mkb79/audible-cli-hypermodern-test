@@ -40,7 +40,7 @@ def run_async(f):
 
 
 def wrap_async(f):
-    """Wrap a synchronous function and runs them in an executor"""
+    """Wrap a synchronous function and runs them in an executor."""
 
     @wraps(f)
     async def wrapper(*args, loop=None, executor=None, **kwargs):
@@ -72,7 +72,7 @@ def pass_client(func=None, **client_kwargs):
 
 
 def add_param_to_session(ctx: click.Context, param, value):
-    """Add a parameter to :class:`Session` `param` attribute
+    """Add a parameter to :class:`Session` `param` attribute.
 
     This is usually used as a callback for a click option
     """

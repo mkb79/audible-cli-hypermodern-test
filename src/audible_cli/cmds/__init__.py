@@ -23,13 +23,10 @@ cli_cmds = [
 
 
 def build_in_cmds(func=None):
-    """
-    A decorator to register build-in CLI commands to an instance of
-    `click.Group()`.
+    """A decorator to register build-in CLI commands.
 
-    Returns
-    -------
-    click.Group()
+    Returns:
+        An instance of :class:`click.Group`
     """
 
     def decorator(group):

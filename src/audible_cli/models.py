@@ -188,7 +188,7 @@ class LibraryItem(BaseItem):
         return best[0], best[3]
 
     async def get_child_items(self, **request_params) -> Optional["Library"]:
-        """Get child elements of MultiPartBooks and Podcasts
+        """Get child elements of MultiPartBooks and Podcasts.
 
         With these all parts of a MultiPartBook or all episodes of a Podcasts
         can be shown.
