@@ -71,7 +71,6 @@ def from_entry_point(entry_point_group: Generator):
 
     def decorator(group):
         if not isinstance(group, click.Group):
-            print(type(group))
             raise TypeError(
                 "Plugins can only be attached to an instance of click.Group()"
             )
