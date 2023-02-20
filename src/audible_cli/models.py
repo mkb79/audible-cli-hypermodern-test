@@ -267,7 +267,7 @@ class LibraryItem(BaseItem):
         except Exception as e:
             raise AudibleCliException(
                 f"Can not get download url for asin {self.asin} with message {e}"
-            )
+            ) from None
 
         return httpx.URL(link), codec_name
 
