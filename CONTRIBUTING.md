@@ -11,7 +11,7 @@ Here is a list of important resources for contributors:
 - [Issue Tracker]
 - [Code of Conduct]
 
-[AGPL 3.0 license]: https://opensource.org/license/agpl-v3
+[agpl 3.0 license]: https://opensource.org/license/agpl-v3
 [source code]: https://github.com/mkb79/audible-cli
 [documentation]: https://audible-cli.readthedocs.io/
 [issue tracker]: https://github.com/mkb79/audible-cli/issues
@@ -99,7 +99,7 @@ Your pull request needs to meet the following guidelines for acceptance:
 
 Feel free to submit early, though—we can always iterate on this.
 
-To run linting and code formatting checks before committing your change, you 
+To run linting and code formatting checks before committing your change, you
 can install pre-commit as a Git hook by running the following command:
 
 ```console

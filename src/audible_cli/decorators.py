@@ -275,4 +275,3 @@ def end_date_option(func=None, **kwargs):
         return option(func)
 
     return option
-
