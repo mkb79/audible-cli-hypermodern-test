@@ -10,7 +10,7 @@ import aiofiles
 import click
 import httpx
 import questionary
-from audible.exceptions import LicenseDenied, NotFoundError
+from audible.exceptions import NotFoundError
 from click import echo
 
 from ..decorators import (
@@ -25,6 +25,7 @@ from ..exceptions import (
     AudibleCliException,
     DirectoryDoesNotExists,
     DownloadUrlExpired,
+    LicenseDenied,
     NotDownloadableAsAAX,
     VoucherNeedRefresh,
 )
