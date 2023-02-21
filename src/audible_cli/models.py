@@ -142,14 +142,17 @@ class LibraryItem(BaseItem):
         return data.get("item", data)
 
     def _get_codec(self, quality: str):
-        """If quality is not ``best``, ensures the given quality is present in
+        """Get the audio codec for a specific quality.
+
+        If quality is not ``best``, ensures the given quality is present in
         them codecs list. Otherwise, will find the best aax quality available
         """
-        assert quality in (
+        if quality not in (
             "best",
             "high",
             "normal",
-        )
+        ):
+            raise AudibleCliException(f"Unsupported quality {quality}.")
 
         # if available_codecs is None the item can't be downloaded as aax
         if self.available_codecs is None:
@@ -193,7 +196,6 @@ class LibraryItem(BaseItem):
         With these all parts of a MultiPartBook or all episodes of a Podcasts
         can be shown.
         """
-
         # Only items with content_delivery_type
         # MultiPartBook or Periodical have child elements
         if not self.has_children:
@@ -311,11 +313,12 @@ class LibraryItem(BaseItem):
     async def get_license(
         self, quality: str = "high", response_groups: Optional[str] = None
     ):
-        assert quality in (
+        if quality not in (
             "best",
             "high",
             "normal",
-        )
+        ):
+            raise AudibleCliException(f"Unsupported quality {quality}.")
 
         if response_groups is None:
             response_groups = "last_position_heard, pdf_url, content_reference"
@@ -376,11 +379,12 @@ class LibraryItem(BaseItem):
         return lr
 
     async def get_content_metadata(self, quality: str = "high"):
-        assert quality in (
+        if quality not in (
             "best",
             "high",
             "normal",
-        )
+        ):
+            raise AudibleCliException(f"Unsupported quality {quality}.")
 
         url = f"content/{self.asin}/metadata"
         params = {

@@ -228,7 +228,7 @@ async def add_wishlist(client, asin, title):
                 choices.append(c)
 
             answer = await questionary.checkbox(
-                f"Found the following matches for '{t}'. Which you want to add?",
+                f"Found the following matches for `{t}`. Which you want to add?",
                 choices=choices,
             ).unsafe_ask_async()
 
@@ -293,7 +293,7 @@ async def remove_wishlist(client, asin, title):
                 choices.append(c)
 
             answer = await questionary.checkbox(
-                f"Found the following matches for '{t}'. Which you want to remove?",
+                f"Found the following matches for `{t}`. Which you want to remove?",
                 choices=choices,
             ).unsafe_ask_async()
 

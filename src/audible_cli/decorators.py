@@ -91,7 +91,7 @@ def version_option(func=None, **kwargs):
 
         url = "https://api.github.com/repos/mkb79/audible-cli/releases/latest"
         headers = {"Accept": "application/vnd.github.v3+json"}
-        logger.debug(f"Requesting Github API for latest release information")
+        logger.debug("Requesting Github API for latest release information")
         try:
             response = httpx.get(url, headers=headers, follow_redirects=True)
             response.raise_for_status()
@@ -159,8 +159,7 @@ def password_option(func=None, **kwargs):
 
 
 def verbosity_option(func=None, *, cli_logger=None, **kwargs):
-    """A decorator that adds a `--verbosity, -v` option to the decorated
-    command.
+    """A decorator that adds a verbosity option to the decorated command.
     Keyword arguments are passed to
     the underlying ``click.option`` decorator.
     """
@@ -275,3 +274,4 @@ def end_date_option(func=None, **kwargs):
         return option(func)
 
     return option
+

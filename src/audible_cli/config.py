@@ -156,8 +156,8 @@ class ConfigFile:
             auth_file: The name of the auth_file
             country_code: The country code of the marketplace to use with
                 this profile
-            is_primary: If ``True``, this profile is set as primary in the
-                ``APP`` section
+            is_primary: If ``True``, this profile is set as primary in
+                the profile ``APP`` section
             write_config: If ``True``, save the config to file
             **additional_options: Optional options for the profile.
 

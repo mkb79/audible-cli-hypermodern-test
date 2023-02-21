@@ -1,5 +1,8 @@
-"""
-This is a proof-of-concept and for testing purposes only. No error handling.
+"""Removes encryption of aax and aaxc files.
+
+This is a proof-of-concept and for testing purposes only.
+
+No error handling.
 Need further work. Some options do not work or options are missing.
 
 Needs at least ffmpeg 4.4
@@ -223,7 +226,7 @@ def decrypt_aax(
             has_chapters = False
             try:
                 content_metadata = json.loads(chapter_file.read_text())
-            except:
+            except Exception:
                 secho(f"No chapter data found for {file.name}", fg="red")
             else:
                 echo(f"Using chapters from {chapter_file.name}")
@@ -233,7 +236,7 @@ def decrypt_aax(
                 if not content_metadata["content_metadata"]["chapter_info"][
                     "is_accurate"
                 ]:
-                    secho(f"Chapter data are not accurate", fg="red")
+                    secho("Chapter data are not accurate", fg="red")
                 else:
                     can_rebuild_chapters = True
 
@@ -341,7 +344,7 @@ def decrypt_aaxc(
 
                 try:
                     content_metadata = json.loads(chapter_file.read_text())
-                except:
+                except Exception:
                     secho(f"No chapter data found for {file.name}", fg="red")
                 else:
                     echo(f"Using chapters from {chapter_file.name}")
@@ -351,7 +354,7 @@ def decrypt_aaxc(
                 if not content_metadata["content_metadata"]["chapter_info"][
                     "is_accurate"
                 ]:
-                    secho(f"Chapter data are not accurate", fg="red")
+                    secho("Chapter data are not accurate", fg="red")
                 else:
                     can_rebuild_chapters = True
 

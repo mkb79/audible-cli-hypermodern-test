@@ -15,22 +15,22 @@ logger = logging.getLogger("audible_cli.cmds.cmd_manage")
 
 @click.group("manage")
 def cli():
-    """manage audible-cli"""
+    """Manage audible-cli."""
 
 
 @cli.group("config")
 def manage_config():
-    """manage config"""
+    """Manage config."""
 
 
 @cli.group("profile")
 def manage_profiles():
-    """manage profiles"""
+    """Manage profiles."""
 
 
 @cli.group("auth-file")
 def manage_auth_files():
-    """manage auth files"""
+    """Manage auth files."""
 
 
 @manage_config.command("edit")
@@ -117,10 +117,10 @@ def remove_profile(session, profile):
     profiles = session.config.data.get("profile")
     for p in profile:
         if p not in profiles:
-            secho(f"Profile '{p}' doesn't exist. Can't remove it.", fg="red")
+            secho(f"Profile `{p}` doesn't exist. Can't remove it.", fg="red")
         else:
             del profiles[p]
-            echo(f"Profile '{p}' removed from config")
+            echo(f"Profile `{p}` removed from config")
 
     session.config.write_config()
     echo("Changes successful saved to config file.")

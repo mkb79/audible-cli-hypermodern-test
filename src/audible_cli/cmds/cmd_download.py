@@ -10,7 +10,7 @@ import aiofiles
 import click
 import httpx
 import questionary
-from audible.exceptions import NotFoundError
+from audible.exceptions import LicenseDenied, NotFoundError
 from click import echo
 
 from ..decorators import (
@@ -283,7 +283,8 @@ async def _reuse_voucher(lr_file, item):
     lr = json.loads(lr)
     content_license = lr["content_license"]
 
-    assert content_license["status_code"] == "Granted", "License not granted"
+    if content_license["status_code"] != "Granted":
+        raise LicenseDenied("License not granted")
 
     # try to get the user id
     user_id = None
@@ -756,7 +757,7 @@ async def cli(session, api_client, **params):
                     choices.append(c)
 
                 answer = await questionary.checkbox(
-                    f"Found the following matches for '{title}'. Which you want to download?",
+                    f"Found the following matches for `{title}`. Which you want to download?",
                     choices=choices,
                 ).unsafe_ask_async()
                 if answer is not None:

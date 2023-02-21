@@ -1,5 +1,5 @@
-"""
-Core components for click_plugins
+"""Core components for click_plugins.
+
 https://github.com/click-contrib/click-plugins
 """
 import os
@@ -13,18 +13,15 @@ import click
 
 
 def from_folder(plugin_dir: Union[str, pathlib.Path]):
-    """
-    A decorator to register external CLI commands to an instance of
-    `click.Group()`.
+    """A decorator to register external CLI commands.
 
-    Parameters
-    ----------
-    plugin_dir : str
-        Desc.
+     The decorator must be applied to an instance of `click.Group()`.
 
-    Returns
-    -------
-    click.Group()
+    Args:
+        plugin_dir : Path to load plugins from.
+
+    Returns:
+        click.Group()
     """
 
     def decorator(group):
@@ -55,18 +52,16 @@ def from_folder(plugin_dir: Union[str, pathlib.Path]):
 
 
 def from_entry_point(entry_point_group: Generator):
-    """
-    A decorator to register external CLI commands to an instance of
-    `click.Group()`.
+    """A decorator to register external CLI commands.
 
-    Parameters
-    ----------
-    entry_point_group : iter
-        An iterable producing one `pkg_resources.EntryPoint()` per iteration.
+     The decorator must be applied to an instance of `click.Group()`.
 
-    Returns
-    -------
-    click.Group()
+    Args:
+        entry_point_group : An iterable producing one
+            `pkg_resources.EntryPoint()` per iteration.
+
+    Returns:
+        click.Group()
     """
 
     def decorator(group):
@@ -90,7 +85,8 @@ def from_entry_point(entry_point_group: Generator):
 
 
 class BrokenCommand(click.Command):
-    """
+    """Wraps a broken plugin command.
+
     Rather than completely crash the CLI when a broken plugin is loaded, this
     class provides a modified help message informing the user that the plugin
     is broken, and they should contact the owner. If the user executes the
@@ -99,10 +95,6 @@ class BrokenCommand(click.Command):
     """
 
     def __init__(self, name):
-        """
-        Define the special help messages after instantiating a `click.Command()`.
-        """
-
         click.Command.__init__(self, name)
 
         util_name = os.path.basename(sys.argv and sys.argv[0] or __file__)
@@ -123,9 +115,7 @@ class BrokenCommand(click.Command):
         )
 
     def invoke(self, ctx):
-        """
-        Print the traceback instead of doing nothing.
-        """
+        """Print the traceback instead of doing nothing."""
 
         click.echo(self.help, color=ctx.color)
         ctx.exit(1)

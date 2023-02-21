@@ -1,4 +1,5 @@
-"""
+"""Update title script.
+
 This script replaces the chapter titles from a ffmetadata file with the one
 extracted from an API metadata/voucher file
 
@@ -141,7 +142,8 @@ class FFMeta:
         if not isinstance(api_meta, ApiMeta):
             api_meta = ApiMeta(api_meta)
 
-        assert api_meta.count_chapters() == self.count_chapters()
+        if api_meta.count_chapters() != self.count_chapters():
+            raise Exception("Chapter count mismatch.")
 
         echo(f"Found {self.count_chapters()} chapters to prepare.")
 
