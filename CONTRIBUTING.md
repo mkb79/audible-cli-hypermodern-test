@@ -1,7 +1,7 @@
 # Contributor Guide
 
 Thank you for your interest in improving this project.
-This project is open-source under the [GPL 3.0 license] and
+This project is open-source under the [AGPL 3.0 license] and
 welcomes contributions in the form of bug reports, feature requests, and pull requests.
 
 Here is a list of important resources for contributors:
@@ -11,10 +11,10 @@ Here is a list of important resources for contributors:
 - [Issue Tracker]
 - [Code of Conduct]
 
-[gpl 3.0 license]: https://opensource.org/licenses/GPL-3.0
-[source code]: https://github.com/mkb79/audible-cli-hypermodern-test
-[documentation]: https://audible-cli-hypermodern-test.readthedocs.io/
-[issue tracker]: https://github.com/mkb79/audible-cli-hypermodern-test/issues
+[AGPL 3.0 license]: https://opensource.org/license/agpl-v3
+[source code]: https://github.com/mkb79/audible-cli
+[documentation]: https://audible-cli.readthedocs.io/
+[issue tracker]: https://github.com/mkb79/audible-cli/issues
 
 ## How to report a bug
 
@@ -54,7 +54,7 @@ or the command-line interface:
 
 ```console
 $ poetry run python
-$ poetry run audible-cli-hypermodern-test
+$ poetry run audible
 ```
 
 [poetry]: https://python-poetry.org/
@@ -99,7 +99,8 @@ Your pull request needs to meet the following guidelines for acceptance:
 
 Feel free to submit early, though—we can always iterate on this.
 
-To run linting and code formatting checks before committing your change, you can install pre-commit as a Git hook by running the following command:
+To run linting and code formatting checks before committing your change, you 
+can install pre-commit as a Git hook by running the following command:
 
 ```console
 $ nox --session=pre-commit -- install
@@ -108,7 +109,7 @@ $ nox --session=pre-commit -- install
 It is recommended to open an issue before starting work on anything.
 This will allow a chance to talk it over with the owners and validate your approach.
 
-[pull request]: https://github.com/mkb79/audible-cli-hypermodern-test/pulls
+[pull request]: https://github.com/mkb79/audible-cli/pulls
 
 <!-- github-only -->
 
