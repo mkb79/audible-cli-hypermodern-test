@@ -1,5 +1,5 @@
 """Sphinx configuration."""
-project = "Audible Cli Hypermodern Test"
+project = "Audible Cli"
 author = "mkb79"
 copyright = "2023, mkb79"
 extensions = [

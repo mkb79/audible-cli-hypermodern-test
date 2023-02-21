@@ -2,8 +2,8 @@ import asyncio
 import asyncio.log
 import asyncio.sslproto
 import json
-import pathlib
 import logging
+import pathlib
 from datetime import datetime
 
 import aiofiles
@@ -16,27 +16,26 @@ from click import echo
 from ..decorators import (
     bunch_size_option,
     end_date_option,
+    pass_client,
+    pass_session,
     start_date_option,
     timeout_option,
-    pass_client,
-    pass_session
 )
 from ..exceptions import (
     AudibleCliException,
     DirectoryDoesNotExists,
     DownloadUrlExpired,
+    LicenseDenied,
     NotDownloadableAsAAX,
-    VoucherNeedRefresh
+    VoucherNeedRefresh,
 )
 from ..models import Library
-from ..utils import datetime_type, Downloader
+from ..utils import Downloader, datetime_type
 
 
 logger = logging.getLogger("audible_cli.cmds.cmd_download")
 
-CLIENT_HEADERS = {
-    "User-Agent": "Audible/671 CFNetwork/1240.0.4 Darwin/20.6.0"
-}
+CLIENT_HEADERS = {"User-Agent": "Audible/671 CFNetwork/1240.0.4 Darwin/20.6.0"}
 
 
 class DownloadCounter:
@@ -145,7 +144,7 @@ class DownloadCounter:
             "voucher": self.voucher,
             "voucher_saved": self.voucher_saved,
             "aycl": self.aycl,
-            "aycl_voucher": self.aycl_voucher
+            "aycl_voucher": self.aycl_voucher,
         }
 
     def has_downloads(self):
@@ -160,16 +159,14 @@ counter = DownloadCounter()
 
 
 async def download_cover(
-        client, output_dir, base_filename, item, res, overwrite_existing
+    client, output_dir, base_filename, item, res, overwrite_existing
 ):
     filename = f"{base_filename}_({str(res)}).jpg"
     filepath = output_dir / filename
 
     url = item.get_cover_url(res)
     if url is None:
-        logger.error(
-            f"No COVER with size {res} found for {item.full_title}"
-        )
+        logger.error(f"No COVER with size {res} found for {item.full_title}")
         return
 
     dl = Downloader(url, filepath, client, overwrite_existing, "image/jpeg")
@@ -179,9 +176,7 @@ async def download_cover(
         counter.count_cover()
 
 
-async def download_pdf(
-        client, output_dir, base_filename, item, overwrite_existing
-):
+async def download_pdf(client, output_dir, base_filename, item, overwrite_existing):
     url = item.get_pdf_url()
     if url is None:
         logger.info(f"No PDF found for {item.full_title}")
@@ -190,8 +185,11 @@ async def download_pdf(
     filename = base_filename + ".pdf"
     filepath = output_dir / filename
     dl = Downloader(
-        url, filepath, client, overwrite_existing,
-        ["application/octet-stream", "application/pdf"]
+        url,
+        filepath,
+        client,
+        overwrite_existing,
+        ["application/octet-stream", "application/pdf"],
     )
     downloaded = await dl.run(stream=False, pb=False)
 
@@ -200,7 +198,7 @@ async def download_pdf(
 
 
 async def download_chapters(
-        output_dir, base_filename, item, quality, overwrite_existing
+    output_dir, base_filename, item, quality, overwrite_existing
 ):
     if not output_dir.is_dir():
         raise DirectoryDoesNotExists(output_dir)
@@ -208,17 +206,13 @@ async def download_chapters(
     filename = base_filename + "-chapters.json"
     file = output_dir / filename
     if file.exists() and not overwrite_existing:
-        logger.info(
-            f"File {file} already exists. Skip saving chapters"
-        )
+        logger.info(f"File {file} already exists. Skip saving chapters")
         return True
 
     try:
         metadata = await item.get_content_metadata(quality)
     except NotFoundError:
-        logger.info(
-            f"No chapters found for {item.full_title}."
-        )
+        logger.info(f"No chapters found for {item.full_title}.")
         return
     metadata = json.dumps(metadata, indent=4)
     async with aiofiles.open(file, "w") as f:
@@ -227,26 +221,20 @@ async def download_chapters(
     counter.count_chapter()
 
 
-async def download_annotations(
-        output_dir, base_filename, item, overwrite_existing
-):
+async def download_annotations(output_dir, base_filename, item, overwrite_existing):
     if not output_dir.is_dir():
         raise DirectoryDoesNotExists(output_dir)
 
     filename = base_filename + "-annotations.json"
     file = output_dir / filename
     if file.exists() and not overwrite_existing:
-        logger.info(
-            f"File {file} already exists. Skip saving annotations"
-        )
+        logger.info(f"File {file} already exists. Skip saving annotations")
         return True
 
     try:
         annotation = await item.get_annotations()
     except NotFoundError:
-        logger.info(
-            f"No annotations found for {item.full_title}."
-        )
+        logger.info(f"No annotations found for {item.full_title}.")
         return
     annotation = json.dumps(annotation, indent=4)
     async with aiofiles.open(file, "w") as f:
@@ -256,8 +244,7 @@ async def download_annotations(
 
 
 async def download_aax(
-        client, output_dir, base_filename, item, quality, overwrite_existing,
-        aax_fallback
+    client, output_dir, base_filename, item, quality, overwrite_existing, aax_fallback
 ):
     # url, codec = await item.get_aax_url(quality)
     try:
@@ -271,15 +258,18 @@ async def download_aax(
                 base_filename=base_filename,
                 item=item,
                 quality=quality,
-                overwrite_existing=overwrite_existing
+                overwrite_existing=overwrite_existing,
             )
         raise
 
     filename = base_filename + f"-{codec}.aax"
     filepath = output_dir / filename
     dl = Downloader(
-        url, filepath, client, overwrite_existing,
-        ["audio/aax", "audio/vnd.audible.aax", "audio/audible"]
+        url,
+        filepath,
+        client,
+        overwrite_existing,
+        ["audio/aax", "audio/vnd.audible.aax", "audio/audible"],
     )
     downloaded = await dl.run(pb=True)
 
@@ -294,7 +284,8 @@ async def _reuse_voucher(lr_file, item):
     lr = json.loads(lr)
     content_license = lr["content_license"]
 
-    assert content_license["status_code"] == "Granted", "License not granted"
+    if content_license["status_code"] != "Granted":
+        raise LicenseDenied("License not granted")
 
     # try to get the user id
     user_id = None
@@ -338,8 +329,7 @@ async def _reuse_voucher(lr_file, item):
 
 
 async def download_aaxc(
-        client, output_dir, base_filename, item,
-        quality, overwrite_existing
+    client, output_dir, base_filename, item, quality, overwrite_existing
 ):
     lr, url, codec = None, None, None
 
@@ -347,27 +337,26 @@ async def download_aaxc(
     if not overwrite_existing:
         codec, _ = item._get_codec(quality)
         if codec is not None:
-            filepath = pathlib.Path(
-                output_dir) / f"{base_filename}-{codec}.aaxc"
+            filepath = pathlib.Path(output_dir) / f"{base_filename}-{codec}.aaxc"
             lr_file = filepath.with_suffix(".voucher")
 
             if lr_file.is_file():
                 if filepath.is_file():
-                    logger.info(
-                        f"File {lr_file} already exists. Skip download."
-                    )
-                    logger.info(
-                        f"File {filepath} already exists. Skip download."
-                    )
+                    logger.info(f"File {lr_file} already exists. Skip download.")
+                    logger.info(f"File {filepath} already exists. Skip download.")
                     return
 
                 try:
                     lr, url, codec = await _reuse_voucher(lr_file, item)
                 except DownloadUrlExpired:
-                    logger.debug(f"Download url in {lr_file} is expired. Refreshing license.")
+                    logger.debug(
+                        f"Download url in {lr_file} is expired. Refreshing license."
+                    )
                     overwrite_existing = True
                 except VoucherNeedRefresh:
-                    logger.debug(f"Refresh date for voucher {lr_file} reached. Refreshing license.")
+                    logger.debug(
+                        f"Voucher file {lr_file} is expired. Refreshing license."
+                    )
                     overwrite_existing = True
 
     is_aycl = item.benefit_id == "AYCL"
@@ -383,14 +372,11 @@ async def download_aaxc(
     else:
         ext = "aaxc"
 
-    filepath = pathlib.Path(
-        output_dir) / f"{base_filename}-{codec}.{ext}"
+    filepath = pathlib.Path(output_dir) / f"{base_filename}-{codec}.{ext}"
     lr_file = filepath.with_suffix(".voucher")
 
     if lr_file.is_file() and not overwrite_existing:
-        logger.info(
-            f"File {lr_file} already exists. Skip download."
-        )
+        logger.info(f"File {lr_file} already exists. Skip download.")
     else:
         lr = json.dumps(lr, indent=4)
         async with aiofiles.open(lr_file, "w") as f:
@@ -404,9 +390,12 @@ async def download_aaxc(
         client,
         overwrite_existing,
         [
-            "audio/aax", "audio/vnd.audible.aax", "audio/mpeg", "audio/x-m4a",
-            "audio/audible"
-        ]
+            "audio/aax",
+            "audio/vnd.audible.aax",
+            "audio/mpeg",
+            "audio/x-m4a",
+            "audio/audible",
+        ],
     )
     downloaded = await dl.run(pb=True)
 
@@ -433,21 +422,21 @@ async def consume(queue, ignore_errors):
 
 
 def queue_job(
-        queue,
-        get_cover,
-        get_pdf,
-        get_annotation,
-        get_chapters,
-        get_aax,
-        get_aaxc,
-        client,
-        output_dir,
-        filename_mode,
-        item,
-        cover_sizes,
-        quality,
-        overwrite_existing,
-        aax_fallback
+    queue,
+    get_cover,
+    get_pdf,
+    get_annotation,
+    get_chapters,
+    get_aax,
+    get_aaxc,
+    client,
+    output_dir,
+    filename_mode,
+    item,
+    cover_sizes,
+    quality,
+    overwrite_existing,
+    aax_fallback,
 ):
     base_filename = item.create_base_filename(filename_mode)
 
@@ -462,8 +451,8 @@ def queue_job(
                         base_filename=base_filename,
                         item=item,
                         res=cover_size,
-                        overwrite_existing=overwrite_existing
-                    )
+                        overwrite_existing=overwrite_existing,
+                    ),
                 )
             )
 
@@ -476,8 +465,8 @@ def queue_job(
                     output_dir=output_dir,
                     base_filename=base_filename,
                     item=item,
-                    overwrite_existing=overwrite_existing
-                )
+                    overwrite_existing=overwrite_existing,
+                ),
             )
         )
 
@@ -490,8 +479,8 @@ def queue_job(
                     base_filename=base_filename,
                     item=item,
                     quality=quality,
-                    overwrite_existing=overwrite_existing
-                )
+                    overwrite_existing=overwrite_existing,
+                ),
             )
         )
 
@@ -503,8 +492,8 @@ def queue_job(
                     output_dir=output_dir,
                     base_filename=base_filename,
                     item=item,
-                    overwrite_existing=overwrite_existing
-                )
+                    overwrite_existing=overwrite_existing,
+                ),
             )
         )
 
@@ -519,8 +508,8 @@ def queue_job(
                     item=item,
                     quality=quality,
                     overwrite_existing=overwrite_existing,
-                    aax_fallback=aax_fallback
-                )
+                    aax_fallback=aax_fallback,
+                ),
             )
         )
 
@@ -534,8 +523,8 @@ def queue_job(
                     base_filename=base_filename,
                     item=item,
                     quality=quality,
-                    overwrite_existing=overwrite_existing
-                )
+                    overwrite_existing=overwrite_existing,
+                ),
             )
         )
 
@@ -563,124 +552,98 @@ def display_counter():
 
 @click.command("download")
 @click.option(
-    "--output-dir", "-o",
+    "--output-dir",
+    "-o",
     type=click.Path(exists=True, dir_okay=True),
     default=pathlib.Path().cwd(),
-    help="output dir, uses current working dir as default"
+    help="output dir, uses current working dir as default",
 )
 @click.option(
     "--all",
     is_flag=True,
-    help="download all library items, overrides --asin and --title options"
+    help="download all library items, overrides --asin and --title options",
 )
+@click.option("--asin", "-a", multiple=True, help="asin of the audiobook")
 @click.option(
-    "--asin", "-a",
-    multiple=True,
-    help="asin of the audiobook"
+    "--title", "-t", multiple=True, help="tile of the audiobook (partial search)"
 )
+@click.option("--aax", is_flag=True, help="Download book in aax format")
 @click.option(
-    "--title", "-t",
-    multiple=True,
-    help="tile of the audiobook (partial search)"
-)
-@click.option(
-    "--aax",
-    is_flag=True,
-    help="Download book in aax format"
-)
-@click.option(
-    "--aaxc",
-    is_flag=True,
-    help="Download book in aaxc format incl. voucher file"
+    "--aaxc", is_flag=True, help="Download book in aaxc format incl. voucher file"
 )
 @click.option(
     "--aax-fallback",
     is_flag=True,
-    help="Download book in aax format and fallback to aaxc, if former is not supported."
+    help=(
+        "Download book in aax format and fallback to aaxc, "
+        "if former is not supported."
+    ),
 )
 @click.option(
-    "--quality", "-q",
+    "--quality",
+    "-q",
     default="best",
     show_default=True,
     type=click.Choice(["best", "high", "normal"]),
-    help="download quality"
+    help="download quality",
 )
 @click.option(
-    "--pdf",
-    is_flag=True,
-    help="downloads the pdf in addition to the audiobook"
+    "--pdf", is_flag=True, help="downloads the pdf in addition to the audiobook"
 )
 @click.option(
-    "--cover",
-    is_flag=True,
-    help="downloads the cover in addition to the audiobook"
+    "--cover", is_flag=True, help="downloads the cover in addition to the audiobook"
 )
 @click.option(
     "--cover-size",
-    type=click.Choice(["252", "315", "360", "408", "500", "558", "570", "882",
-                       "900", "1215"]),
+    type=click.Choice(
+        ["252", "315", "360", "408", "500", "558", "570", "882", "900", "1215"]
+    ),
     default=["500"],
     multiple=True,
-    help="The cover pixel size. This option can be provided multiple times."
+    help="The cover pixel size. This option can be provided multiple times.",
 )
-@click.option(
-    "--chapter",
-    is_flag=True,
-    help="saves chapter metadata as JSON file"
-)
+@click.option("--chapter", is_flag=True, help="saves chapter metadata as JSON file")
 @click.option(
     "--annotation",
     is_flag=True,
-    help="saves the annotations (e.g. bookmarks, notes) as JSON file"
+    help="saves the annotations (e.g. bookmarks, notes) as JSON file",
 )
 @start_date_option
 @end_date_option
+@click.option("--no-confirm", "-y", is_flag=True, help="start without confirm")
+@click.option("--overwrite", is_flag=True, help="rename existing files")
 @click.option(
-    "--no-confirm", "-y",
-    is_flag=True,
-    help="start without confirm"
+    "--ignore-errors", is_flag=True, help="ignore errors and continue with the rest"
 )
 @click.option(
-    "--overwrite",
-    is_flag=True,
-    help="rename existing files"
-)
-@click.option(
-    "--ignore-errors",
-    is_flag=True,
-    help="ignore errors and continue with the rest"
-)
-@click.option(
-    "--jobs", "-j",
+    "--jobs",
+    "-j",
     type=int,
     default=3,
     show_default=True,
-    help="number of simultaneous downloads"
+    help="number of simultaneous downloads",
 )
 @click.option(
-    "--filename-mode", "-f",
-    type=click.Choice(
-        ["config", "ascii", "asin_ascii", "unicode", "asin_unicode"]
-    ),
+    "--filename-mode",
+    "-f",
+    type=click.Choice(["config", "ascii", "asin_ascii", "unicode", "asin_unicode"]),
     default="config",
-    help="Filename mode to use. [default: config]"
+    help="Filename mode to use. [default: config]",
 )
 @timeout_option
 @click.option(
     "--resolve-podcasts",
     is_flag=True,
-    help="Resolve podcasts to download a single episode via asin or title"
+    help="Resolve podcasts to download a single episode via asin or title",
 )
 @click.option(
-    "--ignore-podcasts",
-    is_flag=True,
-    help="Ignore a podcast if it have episodes"
+    "--ignore-podcasts", is_flag=True, help="Ignore a podcast if it have episodes"
 )
 @bunch_size_option
 @pass_session
 @pass_client(headers=CLIENT_HEADERS)
 async def cli(session, api_client, **params):
-    """download audiobook(s) from library"""
+    """Download audiobook(s) from library."""
     client = api_client.session
     output_dir = pathlib.Path(params.get("output_dir")).resolve()
 
@@ -708,9 +671,7 @@ async def cli(session, api_client, **params):
     get_chapters = params.get("chapter")
     get_cover = params.get("cover")
     get_pdf = params.get("pdf")
-    if not any(
-        [get_aax, get_aaxc, get_annotation, get_chapters, get_cover, get_pdf]
-    ):
+    if not any([get_aax, get_aaxc, get_annotation, get_chapters, get_cover, get_pdf]):
         logger.error("Please select an option what you want download.")
         raise click.Abort()
 
@@ -736,9 +697,7 @@ async def cli(session, api_client, **params):
             f"Selected start date: {start_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')}"
         )
     if end_date is not None:
-        logger.info(
-            f"Selected end date: {end_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')}"
-        )
+        logger.info(f"Selected end date: {end_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')}")
 
     if ignore_podcasts and resolve_podcasts:
         logger.error("Do not mix *ignore-podcasts* with *resolve-podcasts* option.")
@@ -746,8 +705,10 @@ async def cli(session, api_client, **params):
 
     filename_mode = params.get("filename_mode")
     if filename_mode == "config":
-        filename_mode = session.config.get_profile_option(
-            session.selected_profile, "filename_mode") or "ascii"
+        filename_mode = (
+            session.config.get_profile_option(session.selected_profile, "filename_mode")
+            or "ascii"
+        )
 
     # fetch the user library
     library = await Library.from_api_full_sync(
@@ -782,9 +743,7 @@ async def cli(session, api_client, **params):
             if not ignore_errors:
                 logger.error(f"Asin {asin} not found in library.")
                 click.Abort()
-            logger.error(
-                f"Skip asin {asin}: Not found in library"
-            )
+            logger.error(f"Skip asin {asin}: Not found in library")
 
     for title in titles:
         match = library.search_item_by_title(title)
@@ -802,16 +761,14 @@ async def cli(session, api_client, **params):
                     choices.append(c)
 
                 answer = await questionary.checkbox(
-                    f"Found the following matches for '{title}'. Which you want to download?",
-                    choices=choices
+                    f"Following found for `{title}`. Which you want to download?",
+                    choices=choices,
                 ).unsafe_ask_async()
                 if answer is not None:
                     [jobs.append(i) for i in answer]
 
         else:
-            logger.error(
-                f"Skip title {title}: Not found in library"
-            )
+            logger.error(f"Skip title {title}: Not found in library")
 
     queue = asyncio.Queue()
     for job in jobs:
@@ -823,14 +780,12 @@ async def cli(session, api_client, **params):
             items.remove(item)
             if not ignore_podcasts:
                 if item._children is None:
-                    await item.get_child_items(
-                        start_date=start_date, end_date=end_date
-                    )
-    
+                    await item.get_child_items(start_date=start_date, end_date=end_date)
+
                 for i in item._children:
                     if i.asin not in jobs:
                         items.append(i)
-    
+
                 podcast_dir = item.create_base_filename(filename_mode)
                 odir = output_dir / podcast_dir
                 if not odir.is_dir():
@@ -852,13 +807,14 @@ async def cli(session, api_client, **params):
                 cover_sizes=cover_sizes,
                 quality=quality,
                 overwrite_existing=overwrite_existing,
-                aax_fallback=aax_fallback
+                aax_fallback=aax_fallback,
             )
 
     try:
         # schedule the consumer
         consumers = [
-            asyncio.ensure_future(consume(queue, ignore_errors)) for _ in range(sim_jobs)
+            asyncio.ensure_future(consume(queue, ignore_errors))
+            for _ in range(sim_jobs)
         ]
         # wait until the consumer has processed all items
         await queue.join()

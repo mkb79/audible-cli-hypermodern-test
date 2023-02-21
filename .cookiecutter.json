@@ -5,10 +5,10 @@
   "copyright_year": "2023",
   "development_status": "Development Status :: 1 - Planning",
   "email": "mkb79@hackitall.de",
-  "friendly_name": "Audible Cli Hypermodern Test",
+  "friendly_name": "Audible Cli",
   "github_user": "mkb79",
   "license": "GPL-3.0",
   "package_name": "audible_cli",
-  "project_name": "audible-cli-hypermodern-test",
+  "project_name": "audible-cli",
   "version": "0.0.0"
 }

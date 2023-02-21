@@ -1,9 +1,11 @@
 import logging
 import sys
-from pkg_resources import iter_entry_points
 
 import click
+from pkg_resources import iter_entry_points
 
+from . import plugins
+from ._logging import click_basic_config
 from .cmds import build_in_cmds, cmd_quickstart
 from .config import get_plugin_dir
 from .constants import PLUGIN_ENTRY_POINT
@@ -11,11 +13,9 @@ from .decorators import (
     password_option,
     profile_option,
     verbosity_option,
-    version_option
+    version_option,
 )
 from .exceptions import AudibleCliException
-from ._logging import click_basic_config
-from . import plugins
 
 
 logger = logging.getLogger("audible_cli")
@@ -41,7 +41,7 @@ def cli():
 @version_option
 @verbosity_option(cli_logger=logger)
 def quickstart(ctx):
-    """Entrypoint for the quickstart command"""
+    """Entrypoint for the quickstart command."""
     try:
         sys.exit(ctx.forward(cmd_quickstart.cli))
     except click.Abort:

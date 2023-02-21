@@ -1,13 +1,13 @@
 [tool.poetry]
-name = "audible-cli-hypermodern-test"
-version = "0.2.7"
-description = "Audible Cli Hypermodern Test"
+name = "audible-cli"
+version = "0.2.4"
+description = "Command line interface (cli) for the audible package."
 authors = ["mkb79 <mkb79@hackitall.de>"]
 license = "AGPL-3.0-only"
 readme = "README.md"
-homepage = "https://github.com/mkb79/audible-cli-hypermodern-test"
-repository = "https://github.com/mkb79/audible-cli-hypermodern-test"
-documentation = "https://audible-cli-hypermodern-test.readthedocs.io"
+homepage = "https://github.com/mkb79/audible-cli"
+repository = "https://github.com/mkb79/audible-cli"
+documentation = "https://audible-cli.readthedocs.io"
 packages = [
     { include = "audible_cli", from = "src" },
 ]
@@ -29,7 +29,7 @@ classifiers = [
     ]
 
 [tool.poetry.urls]
-Changelog = "https://github.com/mkb79/audible-cli-hypermodern-test/releases"
+Changelog = "https://github.com/mkb79/audible-cli/releases"
 
 [tool.poetry.dependencies]
 python = ">=3.7,<3.12"
@@ -89,10 +89,14 @@ source = ["audible_cli", "tests"]
 [tool.coverage.report]
 show_missing = true
 fail_under = 100
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:"
+]
 
 [tool.isort]
 profile = "black"
-force_single_line = true
+force_single_line = false
 lines_after_imports = 2
 
 [tool.mypy]

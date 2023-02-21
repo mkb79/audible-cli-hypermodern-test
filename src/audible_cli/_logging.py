@@ -26,9 +26,7 @@ class AudibleCliLogHelper:
             obj.setLevel(level)
 
         level_name = logging.getLevelName(obj.level)
-        audible_cli_logger.info(
-            f"set log level for {obj.name} to: {level_name}"
-        )
+        audible_cli_logger.info(f"set log level for {obj.name} to: {level_name}")
 
         if 0 < obj.level < audible_cli_logger.level:
             warn(
@@ -42,17 +40,14 @@ class AudibleCliLogHelper:
         audible_cli_logger.addHandler(handler)
         self._set_level(handler, level)
 
-    def set_console_logger(
-            self,
-            level: Optional[Union[str, int]] = None
-    ) -> None:
+    def set_console_logger(self, level: Optional[Union[str, int]] = None) -> None:
         """Set up a console logger to the audible-cli package."""
         handler = logging.StreamHandler()
         # noinspection PyTypeChecker
         self._set_handler(handler, "ConsoleLogger", level)
 
     def set_file_logger(
-            self, filename: str, level: Optional[Union[str, int]] = None
+        self, filename: str, level: Optional[Union[str, int]] = None
     ) -> None:
         """Set up a file logger to the audible-cli package."""
         filename = pathlib.Path(filename)
@@ -83,9 +78,7 @@ class ColorFormatter(logging.Formatter):
             level = record.levelname.lower()
             msg = record.getMessage()
             if self.style_kwargs.get(level):
-                prefix = click.style(
-                    f"{level}: ",
-                    **self.style_kwargs[level])
+                prefix = click.style(f"{level}: ", **self.style_kwargs[level])
                 msg = "\n".join(prefix + x for x in msg.splitlines())
             return msg
         return super().format(record)
@@ -120,7 +113,7 @@ def _normalize_style_kwargs(styles):
         "exception": dict(fg="red"),
         "critical": dict(fg="red"),
         "debug": dict(fg="blue"),
-        "warning": dict(fg="yellow")
+        "warning": dict(fg="yellow"),
     }
     if styles:
         normalized_styles.update(styles)
@@ -135,8 +128,11 @@ def _normalize_echo_kwargs(echo_kwargs):
 
 
 def click_basic_config(logger=None, style_kwargs=None, echo_kwargs=None):
-    """Set up the default handler (:py:class:`ClickHandler`) and formatter
-    (:py:class:`ColorFormatter`) on the given logger."""
+    """Setup config for basic logging with click.
+
+    Using :class:`ClickHandler` and :class:`ColorFormatter`
+    on the given logger.
+    """
     logger = _normalize_logger(logger)
     style_kwargs = _normalize_style_kwargs(style_kwargs)
     echo_kwargs = _normalize_echo_kwargs(echo_kwargs)
