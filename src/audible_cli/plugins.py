@@ -116,7 +116,6 @@ class BrokenCommand(click.Command):
 
     def invoke(self, ctx):
         """Print the traceback instead of doing nothing."""
-
         click.echo(self.help, color=ctx.color)
         ctx.exit(1)
 

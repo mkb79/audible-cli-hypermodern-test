@@ -456,7 +456,10 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
     "--separate-intro-outro",
     "-s",
     is_flag=True,
-    help="Separate Audible Brand Intro and Outro to own Chapter. Only use with `--rebuild-chapters`.",
+    help=(
+        "Separate Audible Brand Intro and Outro to own Chapter. "
+        "Only use with `--rebuild-chapters`."
+    ),
 )
 @click.option(
     "--ignore-missing-chapters",
@@ -464,7 +467,8 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
     is_flag=True,
     help=(
         "Decrypt without rebuilding chapters when chapters are not present. "
-        "Otherwise an item is skipped when this option is not provided. Only use with `--rebuild-chapters`."
+        "Otherwise an item is skipped when this option is not provided. "
+        "Only use with `--rebuild-chapters`."
     ),
 )
 @pass_session

@@ -355,7 +355,7 @@ async def download_aaxc(
                     overwrite_existing = True
                 except VoucherNeedRefresh:
                     logger.debug(
-                        f"Refresh date for voucher {lr_file} reached. Refreshing license."
+                        f"Voucher file {lr_file} is expired. Refreshing license."
                     )
                     overwrite_existing = True
 
@@ -574,7 +574,10 @@ def display_counter():
 @click.option(
     "--aax-fallback",
     is_flag=True,
-    help="Download book in aax format and fallback to aaxc, if former is not supported.",
+    help=(
+        "Download book in aax format and fallback to aaxc, "
+        "if former is not supported."
+    ),
 )
 @click.option(
     "--quality",
@@ -758,7 +761,7 @@ async def cli(session, api_client, **params):
                     choices.append(c)
 
                 answer = await questionary.checkbox(
-                    f"Found the following matches for `{title}`. Which you want to download?",
+                    f"Following found for `{title}`. Which you want to download?",
                     choices=choices,
                 ).unsafe_ask_async()
                 if answer is not None:

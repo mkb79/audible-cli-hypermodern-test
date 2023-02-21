@@ -160,6 +160,7 @@ def password_option(func=None, **kwargs):
 
 def verbosity_option(func=None, *, cli_logger=None, **kwargs):
     """A decorator that adds a verbosity option to the decorated command.
+
     Keyword arguments are passed to
     the underlying ``click.option`` decorator.
     """
