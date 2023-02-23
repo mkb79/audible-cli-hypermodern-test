@@ -22,7 +22,7 @@ from ..decorators import (
     timeout_option,
 )
 from ..exceptions import (
-    AudibleCliException,
+    AudibleCliError,
     DirectoryDoesNotExists,
     DownloadUrlExpired,
     LicenseDenied,
@@ -303,7 +303,7 @@ async def _reuse_voucher(lr_file, item):
             if allowed_users and user_id not in allowed_users:
                 # Don't proceed here to prevent overwriting voucher file
                 msg = f"The current user is not entitled to use the voucher {lr_file}."
-                raise AudibleCliException(msg)
+                raise AudibleCliError(msg)
         else:
             logger.debug(f"{lr_file} does not contain allowed users key.")
 

@@ -26,10 +26,10 @@ import click
 from click import echo, secho
 
 from audible_cli.decorators import pass_session
-from audible_cli.exceptions import AudibleCliException
+from audible_cli.exceptions import AudibleCliError
 
 
-class ChapterError(AudibleCliException):
+class ChapterError(AudibleCliError):
     """Base class for all chapter errors."""
 
 
@@ -91,14 +91,14 @@ def recursive_lookup_dict(key: str, dictionary: t.Dict[str, t.Any]) -> t.Any:
 
 def get_aaxc_credentials(voucher_file: pathlib.Path):
     if not voucher_file.exists() or not voucher_file.is_file():
-        raise AudibleCliException(f"Voucher file {voucher_file} not found.")
+        raise AudibleCliError(f"Voucher file {voucher_file} not found.")
 
     voucher_dict = json.loads(voucher_file.read_text())
     try:
         key = recursive_lookup_dict("key", voucher_dict)
         iv = recursive_lookup_dict("iv", voucher_dict)
     except KeyError:
-        raise AudibleCliException(f"No key/iv found in file {voucher_file}.") from None
+        raise AudibleCliError(f"No key/iv found in file {voucher_file}.") from None
 
     return key, iv
 
@@ -327,7 +327,7 @@ class FfmpegFileDecrypter:
         credentials = None
         if file_type == SupportedFiles.AAX:
             if activation_bytes is None:
-                raise AudibleCliException(
+                raise AudibleCliError(
                     "No activation bytes found. Do you ever run "
                     "`audible activation-bytes`?"
                 )

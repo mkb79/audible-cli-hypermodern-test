@@ -2,19 +2,19 @@ from datetime import datetime
 from pathlib import Path
 
 
-class AudibleCliException(Exception):
+class AudibleCliError(Exception):
     """Base class for all errors."""
 
 
-class NotFoundError(AudibleCliException):
+class NotFoundError(AudibleCliError):
     """Raised if an item is not found."""
 
 
-class NotDownloadableAsAAX(AudibleCliException):
+class NotDownloadableAsAAX(AudibleCliError):
     """Raised if an item is not downloadable in aax format."""
 
 
-class FileDoesNotExists(AudibleCliException):
+class FileDoesNotExists(AudibleCliError):
     """Raised if a file does not exist."""
 
     def __init__(self, file):
@@ -25,7 +25,7 @@ class FileDoesNotExists(AudibleCliException):
         super().__init__(message)
 
 
-class DirectoryDoesNotExists(AudibleCliException):
+class DirectoryDoesNotExists(AudibleCliError):
     """Raised if a directory does not exist."""
 
     def __init__(self, path):
@@ -36,7 +36,7 @@ class DirectoryDoesNotExists(AudibleCliException):
         super().__init__(message)
 
 
-class ProfileAlreadyExists(AudibleCliException):
+class ProfileAlreadyExists(AudibleCliError):
     """Raised if an item is not found."""
 
     def __init__(self, name):
@@ -44,11 +44,11 @@ class ProfileAlreadyExists(AudibleCliException):
         super().__init__(message)
 
 
-class LicenseDenied(AudibleCliException):
+class LicenseDenied(AudibleCliError):
     """Raised if a license request is not granted."""
 
 
-class NoDownloadUrl(AudibleCliException):
+class NoDownloadUrl(AudibleCliError):
     """Raised if a license response does not contain a download url."""
 
     def __init__(self, asin):
@@ -56,7 +56,7 @@ class NoDownloadUrl(AudibleCliException):
         super().__init__(message)
 
 
-class DownloadUrlExpired(AudibleCliException):
+class DownloadUrlExpired(AudibleCliError):
     """Raised if a download url is expired."""
 
     def __init__(self, lr_file):
@@ -64,7 +64,7 @@ class DownloadUrlExpired(AudibleCliException):
         super().__init__(message)
 
 
-class VoucherNeedRefresh(AudibleCliException):
+class VoucherNeedRefresh(AudibleCliError):
     """Raised if a voucher reached his refresh date."""
 
     def __init__(self, lr_file):
@@ -72,7 +72,7 @@ class VoucherNeedRefresh(AudibleCliException):
         super().__init__(message)
 
 
-class ItemNotPublished(AudibleCliException):
+class ItemNotPublished(AudibleCliError):
     """Raised if a voucher reached his refresh date."""
 
     def __init__(self, asin: str, pub_date):
