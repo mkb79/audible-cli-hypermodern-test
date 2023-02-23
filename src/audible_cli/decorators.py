@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import warnings
 from functools import partial, wraps
 
 import click
@@ -275,3 +276,33 @@ def end_date_option(func=None, **kwargs):
         return option(func)
 
     return option
+
+
+def deprecated(version_flagged=None, version_removal=None):
+    """This is a decorator to use when deprecating functions or methods.
+
+    The decorator should be called first with the version at which it will be
+    deprecated.
+    """
+
+    def deprecated(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            warnings.simplefilter("always", DeprecationWarning)  # turn off filter
+            warnings.warn(
+                "{}() is deprecated{}{}.".format(
+                    func.__name__,
+                    f" as of version {version_flagged}" if version_flagged else "",
+                    f" and will be removed in version {version_removal}"
+                    if version_removal
+                    else "",
+                ),
+                category=DeprecationWarning,
+                stacklevel=2,
+            )
+            warnings.simplefilter("default", DeprecationWarning)  # reset filter
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return deprecated
