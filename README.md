@@ -29,7 +29,7 @@ Both are written in Python language.
 
 ## Requirements
 
-audible-cli needs at least _Python 3.7_.
+audible-cli needs at least _Python 3.8_.
 
 ## Installation
 
