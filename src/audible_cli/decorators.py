@@ -18,38 +18,38 @@ logger = logging.getLogger("audible_cli.options")
 pass_session = click.make_pass_decorator(Session, ensure=True)
 
 
-def run_async(f):
-    @wraps(f)
+def run_async(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
         logger.debug("Using asyncio.run ...")
-        return asyncio.run(f(*args, **kwargs))
+        return asyncio.run(func(*args, **kwargs))
 
     return wrapper
 
 
-def wrap_async(f):
+def wrap_async(func):
     """Wrap a synchronous function and runs them in an executor."""
 
-    @wraps(f)
+    @wraps(func)
     async def wrapper(*args, loop=None, executor=None, **kwargs):
         if loop is None:
             loop = asyncio.get_event_loop()
 
-        partial_func = partial(f, *args, **kwargs)
+        partial_func = partial(func, *args, **kwargs)
         return await loop.run_in_executor(executor, partial_func)
 
     return wrapper
 
 
 def pass_client(func=None, **client_kwargs):
-    def coro(f):
-        @wraps(f)
+    def coro(inner_func):
+        @wraps(inner_func)
         @pass_session
         @run_async
         async def wrapper(session, *args, **kwargs):
             client = session.get_client(**client_kwargs)
             async with client.session:
-                return await f(*args, client, **kwargs)
+                return await inner_func(*args, client, **kwargs)
 
         return wrapper
 
@@ -83,9 +83,9 @@ def version_option(func=None, **kwargs):
         try:
             response = httpx.get(url, headers=headers, follow_redirects=True)
             response.raise_for_status()
-        except Exception as e:
-            logger.error(e)
-            click.Abort()
+        except Exception as err:
+            logger.error(err)
+            raise click.Abort()
 
         content = response.json()
 
@@ -154,12 +154,12 @@ def verbosity_option(func=None, *, cli_logger=None, **kwargs):
     """
 
     def callback(ctx, param, value):
-        x = getattr(logging, value.upper(), None)
-        if x is None:
+        level = getattr(logging, value.upper(), None)
+        if level is None:
             raise click.BadParameter(
                 f"Must be CRITICAL, ERROR, WARNING, INFO or DEBUG, not {value}"
             )
-        cli_logger.setLevel(x)
+        cli_logger.setLevel(level)
 
     kwargs.setdefault("default", "INFO")
     kwargs.setdefault("metavar", "LVL")
@@ -272,7 +272,7 @@ def deprecated(version_flagged=None, version_removal=None):
     deprecated.
     """
 
-    def deprecated(func):
+    def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
             warnings.simplefilter("always", DeprecationWarning)  # turn off filter
@@ -292,4 +292,4 @@ def deprecated(version_flagged=None, version_removal=None):
 
         return wrapper
 
-    return deprecated
+    return decorator
