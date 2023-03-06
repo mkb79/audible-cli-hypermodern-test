@@ -13,7 +13,7 @@ import pathlib
 import audible
 import click
 
-from audible_cli.config import pass_session
+from audible_cli.decorators import pass_session
 
 
 def extract_data_from_file(credentials):
@@ -27,7 +27,7 @@ def extract_data_from_file(credentials):
     return origins
 
 
-def make_auth_file(fn, origin):
+def make_auth_file(origin):
     tokens = origin["tokens"]
     adp_token = tokens["mac_dms"]["adp_token"]
     device_private_key = tokens["mac_dms"]["device_private_key"]
@@ -65,22 +65,23 @@ def make_auth_file(fn, origin):
 @click.option(
     "--input",
     "-i",
+    "input_",
     type=click.Path(exists=True, file_okay=True),
     multiple=True,
     help="OpenAudible credentials.json file",
 )
 @pass_session
-def cli(session, input):
-    """Converts a OpenAudible credential file to a audible-cli auth file.
+def cli(session, input_):
+    """Converts an OpenAudible credential file to a audible-cli auth file.
 
     Stores the auth files in app dir.
     """
-    fdata = pathlib.Path(input).read_text("utf-8")
+    fdata = pathlib.Path(input_).read_text("utf-8")
     fdata = json.loads(fdata)
 
     x = extract_data_from_file(fdata)
-    for k, v in x.items():
+    for key, value in x.items():
         app_dir = pathlib.Path(session.get_app_dir())
-        fn = app_dir / pathlib.Path(k).with_suffix(".json")
-        auth = make_auth_file(fn, v)
+        fn = app_dir / pathlib.Path(key).with_suffix(".json")
+        auth = make_auth_file(value)
         auth.to_file(fn)
