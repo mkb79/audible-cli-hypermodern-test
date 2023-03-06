@@ -1,7 +1,7 @@
 """Sphinx configuration."""
 project = "Audible Cli"
 author = "mkb79"
-copyright = "2023, mkb79"
+copyright = "2023, mkb79"  # noqa: A001
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
