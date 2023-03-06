@@ -15,12 +15,12 @@ import pathlib
 import re
 import subprocess  # noqa: S404
 import tempfile
-import typing as t
 from enum import Enum
 from functools import reduce
 from glob import glob
 from shlex import quote
 from shutil import which
+from typing import Any, Dict, Generator, List, Optional, Tuple, Union
 
 import click
 from click import echo, secho
@@ -51,8 +51,8 @@ class SupportedFiles(Enum):
 
 
 def _get_input_files(
-    files: t.Union[t.Tuple[str], t.List[str]], recursive: bool = True
-) -> t.List[pathlib.Path]:
+    files: Union[Tuple[str], List[str]], recursive: bool = True
+) -> List[pathlib.Path]:
     filenames = []
     for filename in files:
         # if the shell does not do filename globbing
@@ -75,8 +75,8 @@ def _get_input_files(
 
 
 def recursive_lookup_dict(
-    key: str, item: t.Union[t.Dict[str, t.Any], t.List[t.Any]]
-) -> t.Generator:
+    key: str, item: Union[Dict[str, Any], List[Any]]
+) -> Generator:
     """Recursive iterator over dicts (and lists).
 
     Yields the values for matching dict keys.
@@ -106,12 +106,12 @@ def get_aaxc_credentials(voucher_file: pathlib.Path):
 
 
 class ApiChapterInfo:
-    def __init__(self, content_metadata: t.Dict[str, t.Any]) -> None:
+    def __init__(self, content_metadata: Dict[str, Any]) -> None:
         chapter_info = self._parse(content_metadata)
         self._chapter_info = chapter_info
 
     @classmethod
-    def from_file(cls, file: t.Union[pathlib.Path, str]) -> "ApiChapterInfo":
+    def from_file(cls, file: Union[pathlib.Path, str]) -> "ApiChapterInfo":
         file = pathlib.Path(file)
         if not file.exists() or not file.is_file():
             raise ChapterError(f"Chapter file {file} not found.")
@@ -120,7 +120,7 @@ class ApiChapterInfo:
         return cls(content_json)
 
     @staticmethod
-    def _parse(content_metadata: t.Dict[str, t.Any]) -> t.Dict[str, t.Any]:
+    def _parse(content_metadata: Dict[str, Any]) -> Dict[str, Any]:
         if "chapters" in content_metadata:
             return content_metadata
 
@@ -205,7 +205,7 @@ class FFMeta:
     SECTION = re.compile(r"\[(?P<header>[^]]+)\]")
     OPTION = re.compile(r"(?P<option>.*?)\s*(?:(?P<vi>=)\s*(?P<value>.*))?$")
 
-    def __init__(self, ffmeta_file: t.Union[str, pathlib.Path]) -> None:
+    def __init__(self, ffmeta_file: Union[str, pathlib.Path]) -> None:
         self._ffmeta_raw = pathlib.Path(ffmeta_file).read_text("utf-8")
         self._ffmeta_parsed = self._parse_ffmeta()
 
@@ -319,7 +319,7 @@ class FfmpegFileDecrypter:
         file: pathlib.Path,
         target_dir: pathlib.Path,
         tempdir: pathlib.Path,
-        activation_bytes: t.Optional[str],
+        activation_bytes: Optional[str],
         rebuild_chapters: bool,
         ignore_missing_chapters: bool,
         separate_intro_outro: bool,
@@ -339,14 +339,14 @@ class FfmpegFileDecrypter:
             credentials = get_aaxc_credentials(voucher_filename)
 
         self._source = file
-        self._credentials: t.Optional[t.Union[str, t.Tuple[str]]] = credentials
+        self._credentials: Union[str, Tuple[str], None] = credentials
         self._target_dir = target_dir
         self._tempdir = tempdir
         self._rebuild_chapters = rebuild_chapters
         self._ignore_missing_chapters = ignore_missing_chapters
         self._separate_intro_outro = separate_intro_outro
-        self._api_chapter: t.Optional[ApiChapterInfo] = None
-        self._ffmeta: t.Optional[FFMeta] = None
+        self._api_chapter: Optional[ApiChapterInfo] = None
+        self._ffmeta: Optional[FFMeta] = None
         self._is_rebuilded: bool = False
 
     @property
@@ -524,7 +524,7 @@ class FfmpegFileDecrypter:
 def cli(
     session,
     files: str,
-    directory: t.Union[pathlib.Path, str],
+    directory: Union[pathlib.Path, str],
     all_: bool,
     overwrite: bool,
     rebuild_chapters: bool,
