@@ -3,7 +3,7 @@ import io
 import logging
 import pathlib
 from difflib import SequenceMatcher
-from typing import List, Optional, Union
+from typing import Any, Dict, Generator, List, Optional, Tuple, Union
 
 import aiofiles
 import click
@@ -169,7 +169,7 @@ class Downloader:
         file: Union[pathlib.Path, str],
         client,
         overwrite_existing: bool,
-        content_type: Optional[Union[List[str], str]] = None,
+        content_type: Union[List[str], str, None] = None,
     ) -> None:
         self._url = url
         self._file = pathlib.Path(file).resolve()
@@ -288,7 +288,7 @@ class Downloader:
 
 
 def export_to_csv(
-    file: pathlib.Path, data: list, headers: Union[list, tuple], dialect: str
+    file: pathlib.Path, data: list, headers: Union[List, Tuple], dialect: str
 ) -> None:
     with file.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=headers, dialect=dialect)
@@ -296,3 +296,20 @@ def export_to_csv(
 
         for i in data:
             writer.writerow(i)
+
+
+def recursive_lookup_dict(
+    key: str, item: Union[Dict[str, Any], List[Any]]
+) -> Generator:
+    """Recursive iterator over dicts (and lists).
+
+    Yields the values for matching dict keys.
+    """
+    if isinstance(item, dict):
+        if key in item:
+            yield item[key]
+        for value in item.values():
+            yield from recursive_lookup_dict(key, value)
+    elif isinstance(item, list):
+        for value in item:
+            yield from recursive_lookup_dict(key, value)
