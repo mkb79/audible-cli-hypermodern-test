@@ -26,9 +26,11 @@ def build_in_cmds(func=None):
     """A decorator to register build-in CLI commands.
 
     Args:
+    ----
         func: The function to decorate
 
     Returns:
+    -------
         An instance of :class:`click.Group`
     """
 

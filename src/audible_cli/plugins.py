@@ -18,9 +18,11 @@ def from_folder(plugin_dir: Union[str, pathlib.Path]):
      The decorator must be applied to an instance of `click.Group()`.
 
     Args:
+    ----
         plugin_dir : Path to load plugins from.
 
     Returns:
+    -------
         click.Group()
     """
 
@@ -57,10 +59,12 @@ def from_entry_point(entry_point_group: Generator):
      The decorator must be applied to an instance of `click.Group()`.
 
     Args:
+    ----
         entry_point_group : An iterable producing one
             `pkg_resources.EntryPoint()` per iteration.
 
     Returns:
+    -------
         click.Group()
     """
 
