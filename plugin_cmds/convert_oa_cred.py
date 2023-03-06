@@ -40,7 +40,7 @@ def make_auth_file(fn, origin):
     device_info = extensions["device_info"]
     customer_info = extensions["customer_info"]
 
-    website_cookies = dict()
+    website_cookies = {}
     for cookie in tokens["website_cookies"]:
         website_cookies[cookie["Name"]] = cookie["Value"].replace(r'"', r"")
 

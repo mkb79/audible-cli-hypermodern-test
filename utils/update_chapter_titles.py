@@ -221,7 +221,7 @@ class FFMeta:
         self._ffmeta_parsed["CHAPTER"] = new_chapters
 
 
-CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
+CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 
 
 @click.command(context_settings=CONTEXT_SETTINGS)
