@@ -813,8 +813,7 @@ async def cli(session, api_client, **params):
     try:
         # schedule the consumer
         consumers = [
-            asyncio.create_task(consume(queue, ignore_errors))
-            for _ in range(sim_jobs)
+            asyncio.create_task(consume(queue, ignore_errors)) for _ in range(sim_jobs)
         ]
         # wait until the consumer has processed all items
         await queue.join()
