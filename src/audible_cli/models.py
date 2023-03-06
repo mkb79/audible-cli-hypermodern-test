@@ -121,7 +121,7 @@ class BaseItem:
             return f"https://www.audible.{domain}/companion-file/{self.asin}"
 
     def is_parent_podcast(self):
-        if (
+        return bool(
             "content_delivery_type" in self
             and "content_type" in self
             and (
@@ -129,8 +129,7 @@ class BaseItem:
                 or self.content_type == "Podcast"
             )
             and self.has_children
-        ):
-            return True
+        )
 
     def is_published(self):
         if self.publication_datetime is not None:
