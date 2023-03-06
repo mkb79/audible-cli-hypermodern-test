@@ -73,7 +73,7 @@ class ColorFormatter(logging.Formatter):
         self.style_kwargs = style_kwargs
         super().__init__()
 
-    def format(self, record):
+    def format(self, record):  # noqa: A003
         if not record.exc_info:
             level = record.levelname.lower()
             msg = record.getMessage()
