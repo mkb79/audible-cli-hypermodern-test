@@ -148,11 +148,7 @@ class DownloadCounter:
         }
 
     def has_downloads(self):
-        for v in self.as_dict().values():
-            if v > 0:
-                return True
-
-        return False
+        return any(v > 0 for v in self.as_dict().values())
 
 
 counter = DownloadCounter()
@@ -367,10 +363,7 @@ async def download_aaxc(
         if is_aycl:
             counter.count_aycl_voucher()
 
-    if codec.lower() == "mpeg":
-        ext = "mp3"
-    else:
-        ext = "aaxc"
+    ext = "mp3" if codec.lower() == "mpeg" else "aaxc"
 
     filepath = pathlib.Path(output_dir) / f"{base_filename}-{codec}.{ext}"
     lr_file = filepath.with_suffix(".voucher")
@@ -445,14 +438,14 @@ def queue_job(
             queue.put_nowait(
                 (
                     download_cover,
-                    dict(
-                        client=client,
-                        output_dir=output_dir,
-                        base_filename=base_filename,
-                        item=item,
-                        res=cover_size,
-                        overwrite_existing=overwrite_existing,
-                    ),
+                    {
+                        "client": client,
+                        "output_dir": output_dir,
+                        "base_filename": base_filename,
+                        "item": item,
+                        "res": cover_size,
+                        "overwrite_existing": overwrite_existing,
+                    },
                 )
             )
 
@@ -460,13 +453,13 @@ def queue_job(
         queue.put_nowait(
             (
                 download_pdf,
-                dict(
-                    client=client,
-                    output_dir=output_dir,
-                    base_filename=base_filename,
-                    item=item,
-                    overwrite_existing=overwrite_existing,
-                ),
+                {
+                    "client": client,
+                    "output_dir": output_dir,
+                    "base_filename": base_filename,
+                    "item": item,
+                    "overwrite_existing": overwrite_existing,
+                },
             )
         )
 
@@ -474,13 +467,13 @@ def queue_job(
         queue.put_nowait(
             (
                 download_chapters,
-                dict(
-                    output_dir=output_dir,
-                    base_filename=base_filename,
-                    item=item,
-                    quality=quality,
-                    overwrite_existing=overwrite_existing,
-                ),
+                {
+                    "output_dir": output_dir,
+                    "base_filename": base_filename,
+                    "item": item,
+                    "quality": quality,
+                    "overwrite_existing": overwrite_existing,
+                },
             )
         )
 
@@ -488,12 +481,12 @@ def queue_job(
         queue.put_nowait(
             (
                 download_annotations,
-                dict(
-                    output_dir=output_dir,
-                    base_filename=base_filename,
-                    item=item,
-                    overwrite_existing=overwrite_existing,
-                ),
+                {
+                    "output_dir": output_dir,
+                    "base_filename": base_filename,
+                    "item": item,
+                    "overwrite_existing": overwrite_existing,
+                },
             )
         )
 
@@ -501,15 +494,15 @@ def queue_job(
         queue.put_nowait(
             (
                 download_aax,
-                dict(
-                    client=client,
-                    output_dir=output_dir,
-                    base_filename=base_filename,
-                    item=item,
-                    quality=quality,
-                    overwrite_existing=overwrite_existing,
-                    aax_fallback=aax_fallback,
-                ),
+                {
+                    "client": client,
+                    "output_dir": output_dir,
+                    "base_filename": base_filename,
+                    "item": item,
+                    "quality": quality,
+                    "overwrite_existing": overwrite_existing,
+                    "aax_fallback": aax_fallback,
+                },
             )
         )
 
@@ -517,14 +510,14 @@ def queue_job(
         queue.put_nowait(
             (
                 download_aaxc,
-                dict(
-                    client=client,
-                    output_dir=output_dir,
-                    base_filename=base_filename,
-                    item=item,
-                    quality=quality,
-                    overwrite_existing=overwrite_existing,
-                ),
+                {
+                    "client": client,
+                    "output_dir": output_dir,
+                    "base_filename": base_filename,
+                    "item": item,
+                    "quality": quality,
+                    "overwrite_existing": overwrite_existing,
+                },
             )
         )
 
@@ -813,8 +806,7 @@ async def cli(session, api_client, **params):
     try:
         # schedule the consumer
         consumers = [
-            asyncio.create_task(consume(queue, ignore_errors))
-            for _ in range(sim_jobs)
+            asyncio.create_task(consume(queue, ignore_errors)) for _ in range(sim_jobs)
         ]
         # wait until the consumer has processed all items
         await queue.join()

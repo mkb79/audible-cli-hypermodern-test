@@ -68,7 +68,7 @@ def _get_input_files(
         expanded_filter = filter(
             lambda x: SupportedFiles.is_supported_file(x), expanded
         )
-        expanded = list(map(lambda x: pathlib.Path(x).resolve(), expanded_filter))
+        expanded = [pathlib.Path(x).resolve() for x in expanded_filter]
         filenames.extend(expanded)
 
     return filenames

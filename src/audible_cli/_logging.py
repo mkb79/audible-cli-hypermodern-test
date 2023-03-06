@@ -73,7 +73,7 @@ class ColorFormatter(logging.Formatter):
         self.style_kwargs = style_kwargs
         super().__init__()
 
-    def format(self, record):
+    def format(self, record):  # noqa: A003
         if not record.exc_info:
             level = record.levelname.lower()
             msg = record.getMessage()
@@ -109,11 +109,11 @@ def _normalize_logger(logger):
 
 def _normalize_style_kwargs(styles):
     normalized_styles = {
-        "error": dict(fg="red"),
-        "exception": dict(fg="red"),
-        "critical": dict(fg="red"),
-        "debug": dict(fg="blue"),
-        "warning": dict(fg="yellow"),
+        "error": {"fg": "red"},
+        "exception": {"fg": "red"},
+        "critical": {"fg": "red"},
+        "debug": {"fg": "blue"},
+        "warning": {"fg": "yellow"},
     }
     if styles:
         normalized_styles.update(styles)
@@ -121,7 +121,7 @@ def _normalize_style_kwargs(styles):
 
 
 def _normalize_echo_kwargs(echo_kwargs):
-    normamized_echo_kwargs = dict()
+    normamized_echo_kwargs = {}
     if echo_kwargs:
         normamized_echo_kwargs.update(echo_kwargs)
     return normamized_echo_kwargs
