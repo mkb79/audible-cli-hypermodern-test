@@ -99,7 +99,6 @@ show_error_context = true
 ignore = [
     "D10",  # temporarily ignore missing docstrings
     "E501",
-    "G004",  # temporarily ignore Logging statement uses f-string
     "N818",
 ]
 line-length = 80
