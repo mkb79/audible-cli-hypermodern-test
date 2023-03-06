@@ -74,19 +74,21 @@ def _get_input_files(
     return filenames
 
 
-def recursive_lookup_dict(key: str, dictionary: t.Dict[str, t.Any]) -> t.Any:
-    if key in dictionary:
-        return dictionary[key]
-    for value in dictionary.values():
-        if isinstance(value, dict):
-            try:
-                item = recursive_lookup_dict(key, value)
-            except KeyError:
-                continue
-            else:
-                return item
+def recursive_lookup_dict(
+    key: str, item: t.Union[t.Dict[str, t.Any], t.List[t.Any]]
+) -> t.Generator:
+    """Recursive iterator over dicts (and lists).
 
-    raise KeyError
+    Yields the values for matching dict keys.
+    """
+    if isinstance(item, dict):
+        if key in item:
+            yield item[key]
+        for value in item.values():
+            yield from recursive_lookup_dict(key, value)
+    elif isinstance(item, list):
+        for value in item:
+            yield from recursive_lookup_dict(key, value)
 
 
 def get_aaxc_credentials(voucher_file: pathlib.Path):
@@ -95,9 +97,9 @@ def get_aaxc_credentials(voucher_file: pathlib.Path):
 
     voucher_dict = json.loads(voucher_file.read_text())
     try:
-        key = recursive_lookup_dict("key", voucher_dict)
-        iv = recursive_lookup_dict("iv", voucher_dict)
-    except KeyError:
+        key = next(recursive_lookup_dict("key", voucher_dict))
+        iv = next(recursive_lookup_dict("iv", voucher_dict))
+    except StopIteration:
         raise AudibleCliError(f"No key/iv found in file {voucher_file}.") from None
 
     return key, iv
@@ -123,8 +125,8 @@ class ApiChapterInfo:
             return content_metadata
 
         try:
-            return recursive_lookup_dict("chapter_info", content_metadata)
-        except KeyError:
+            return next(recursive_lookup_dict("chapter_info", content_metadata))
+        except StopIteration:
             raise ChapterError("No chapter info found.") from None
 
     def count_chapters(self):
