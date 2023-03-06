@@ -278,9 +278,7 @@ class LibraryItem(BaseItem):
             raise ItemNotPublished(self.asin, self.publication_datetime)
 
         if not self.is_downloadable():
-            raise AudibleCliError(
-                f"{self.full_title} is not downloadable. Skip item."
-            )
+            raise AudibleCliError(f"{self.full_title} is not downloadable. Skip item.")
 
         codec, codec_name = self._get_codec(quality)
         if codec is None or self.is_ayce:

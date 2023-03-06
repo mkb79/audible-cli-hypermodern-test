@@ -21,7 +21,7 @@ from .exceptions import AudibleCliError
 logger = logging.getLogger("audible_cli")
 click_basic_config(logger)
 
-CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
+CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 
 
 @plugins.from_folder(get_plugin_dir())
