@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import warnings
 from functools import partial, wraps
 
 import click
@@ -17,51 +18,38 @@ logger = logging.getLogger("audible_cli.options")
 pass_session = click.make_pass_decorator(Session, ensure=True)
 
 
-def run_async(f):
-    @wraps(f)
+def run_async(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
-        if hasattr(asyncio, "run"):
-            logger.debug("Using asyncio.run ...")
-            return asyncio.run(f(*args, **kwargs))
-        else:
-            logger.debug("Using asyncio.run_until_complete ...")
-            loop = asyncio.get_event_loop()
-
-            if loop.is_closed():
-                loop = asyncio.new_event_loop()
-
-            try:
-                return loop.run_until_complete(f(*args, **kwargs))
-            finally:
-                loop.run_until_complete(loop.shutdown_asyncgens())
-                loop.close()
+        logger.debug("Using asyncio.run ...")
+        return asyncio.run(func(*args, **kwargs))
 
     return wrapper
 
 
-def wrap_async(f):
+def wrap_async(func):
     """Wrap a synchronous function and runs them in an executor."""
 
-    @wraps(f)
+    @wraps(func)
     async def wrapper(*args, loop=None, executor=None, **kwargs):
         if loop is None:
             loop = asyncio.get_event_loop()
 
-        partial_func = partial(f, *args, **kwargs)
+        partial_func = partial(func, *args, **kwargs)
         return await loop.run_in_executor(executor, partial_func)
 
     return wrapper
 
 
 def pass_client(func=None, **client_kwargs):
-    def coro(f):
-        @wraps(f)
+    def coro(inner_func):
+        @wraps(inner_func)
         @pass_session
         @run_async
         async def wrapper(session, *args, **kwargs):
             client = session.get_client(**client_kwargs)
             async with client.session:
-                return await f(*args, client, **kwargs)
+                return await inner_func(*args, client, **kwargs)
 
         return wrapper
 
@@ -95,9 +83,9 @@ def version_option(func=None, **kwargs):
         try:
             response = httpx.get(url, headers=headers, follow_redirects=True)
             response.raise_for_status()
-        except Exception as e:
-            logger.error(e)
-            click.Abort()
+        except Exception as err:
+            logger.error(err)
+            raise click.Abort()
 
         content = response.json()
 
@@ -166,12 +154,12 @@ def verbosity_option(func=None, *, cli_logger=None, **kwargs):
     """
 
     def callback(ctx, param, value):
-        x = getattr(logging, value.upper(), None)
-        if x is None:
+        level = getattr(logging, value.upper(), None)
+        if level is None:
             raise click.BadParameter(
                 f"Must be CRITICAL, ERROR, WARNING, INFO or DEBUG, not {value}"
             )
-        cli_logger.setLevel(x)
+        cli_logger.setLevel(level)
 
     kwargs.setdefault("default", "INFO")
     kwargs.setdefault("metavar", "LVL")
@@ -275,3 +263,33 @@ def end_date_option(func=None, **kwargs):
         return option(func)
 
     return option
+
+
+def deprecated(version_flagged=None, version_removal=None):
+    """This is a decorator to use when deprecating functions or methods.
+
+    The decorator should be called first with the version at which it will be
+    deprecated.
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            warnings.simplefilter("always", DeprecationWarning)  # turn off filter
+            warnings.warn(
+                "{}() is deprecated{}{}.".format(
+                    func.__name__,
+                    f" as of version {version_flagged}" if version_flagged else "",
+                    f" and will be removed in version {version_removal}"
+                    if version_removal
+                    else "",
+                ),
+                category=DeprecationWarning,
+                stacklevel=2,
+            )
+            warnings.simplefilter("default", DeprecationWarning)  # reset filter
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator

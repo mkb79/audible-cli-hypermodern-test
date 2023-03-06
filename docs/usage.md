@@ -1,7 +1,7 @@
 # Usage
 
 ```{eval-rst}
-.. click:: audible_cli.__main__:main
+.. click:: audible_cli.cli:cli
     :prog: audible
     :nested: full
 ```

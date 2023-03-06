@@ -14,7 +14,7 @@ from audible.client import convert_response_content
 
 from .constants import CODEC_HIGH_QUALITY, CODEC_NORMAL_QUALITY
 from .exceptions import (
-    AudibleCliException,
+    AudibleCliError,
     ItemNotPublished,
     LicenseDenied,
     NoDownloadUrl,
@@ -82,7 +82,7 @@ class BaseItem:
     def create_base_filename(self, mode: str):
         supported_modes = ("ascii", "asin_ascii", "unicode", "asin_unicode")
         if mode not in supported_modes:
-            raise AudibleCliException(f"Unsupported mode {mode} for name creation")
+            raise AudibleCliError(f"Unsupported mode {mode} for name creation")
 
         if "ascii" in mode:
             base_filename = self.full_title_slugify
@@ -152,7 +152,7 @@ class LibraryItem(BaseItem):
             "high",
             "normal",
         ):
-            raise AudibleCliException(f"Unsupported quality {quality}.")
+            raise AudibleCliError(f"Unsupported quality {quality}.")
 
         # if available_codecs is None the item can't be downloaded as aax
         if self.available_codecs is None:
@@ -244,7 +244,7 @@ class LibraryItem(BaseItem):
             raise ItemNotPublished(self.asin, self.publication_datetime)
 
         if not self.is_downloadable():
-            raise AudibleCliException(f"{self.full_title} is not downloadable.")
+            raise AudibleCliError(f"{self.full_title} is not downloadable.")
 
         codec, codec_name = self._get_codec(quality)
         if codec is None or self.is_ayce:
@@ -267,7 +267,7 @@ class LibraryItem(BaseItem):
             domain = str(api_url)[20:]
             link = link.replace("cds.audible.com", f"cds.audible.{domain}")
         except Exception as e:
-            raise AudibleCliException(
+            raise AudibleCliError(
                 f"Can not get download url for asin {self.asin} with message {e}"
             ) from None
 
@@ -278,7 +278,7 @@ class LibraryItem(BaseItem):
             raise ItemNotPublished(self.asin, self.publication_datetime)
 
         if not self.is_downloadable():
-            raise AudibleCliException(
+            raise AudibleCliError(
                 f"{self.full_title} is not downloadable. Skip item."
             )
 
@@ -300,7 +300,7 @@ class LibraryItem(BaseItem):
             raise ItemNotPublished(self.asin, self.publication_datetime)
 
         if not self.is_downloadable():
-            raise AudibleCliException(f"{self.full_title} is not downloadable.")
+            raise AudibleCliError(f"{self.full_title} is not downloadable.")
 
         lr = await self.get_license(quality, license_response_groups)
 
@@ -318,7 +318,7 @@ class LibraryItem(BaseItem):
             "high",
             "normal",
         ):
-            raise AudibleCliException(f"Unsupported quality {quality}.")
+            raise AudibleCliError(f"Unsupported quality {quality}.")
 
         if response_groups is None:
             response_groups = "last_position_heard, pdf_url, content_reference"
@@ -384,7 +384,7 @@ class LibraryItem(BaseItem):
             "high",
             "normal",
         ):
-            raise AudibleCliException(f"Unsupported quality {quality}.")
+            raise AudibleCliError(f"Unsupported quality {quality}.")
 
         url = f"content/{self.asin}/metadata"
         params = {
@@ -516,7 +516,7 @@ class Library(BaseList):
 
         if start_date is not None:
             if "purchase_date" in request_params:
-                raise AudibleCliException(
+                raise AudibleCliError(
                     "Do not use purchase_date and start_date together"
                 )
             request_params["purchased_after"] = start_date.strftime(

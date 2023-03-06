@@ -15,7 +15,7 @@ from .decorators import (
     verbosity_option,
     version_option,
 )
-from .exceptions import AudibleCliException
+from .exceptions import AudibleCliError
 
 
 logger = logging.getLogger("audible_cli")
@@ -47,7 +47,7 @@ def quickstart(ctx):
     except click.Abort:
         logger.error("Aborted")
         sys.exit(1)
-    except AudibleCliException as e:
+    except AudibleCliError as e:
         logger.error(e)
         sys.exit(2)
     except Exception:
@@ -61,7 +61,7 @@ def main(*args, **kwargs):
     except click.Abort:
         logger.error("Aborted")
         sys.exit(1)
-    except AudibleCliException as e:
+    except AudibleCliError as e:
         logger.error(e)
         sys.exit(2)
     except Exception:

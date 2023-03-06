@@ -17,7 +17,7 @@ from .constants import (
     PLUGIN_DIR_ENV,
     PLUGIN_PATH,
 )
-from .exceptions import AudibleCliException, ProfileAlreadyExists
+from .exceptions import AudibleCliError, ProfileAlreadyExists
 
 
 logger = logging.getLogger("audible_cli.config")
@@ -49,7 +49,7 @@ class ConfigFile:
 
         if file_exists:
             if not filename.is_file():
-                raise AudibleCliException(
+                raise AudibleCliError(
                     f"Config file {click.format_filename(filename)} " f"does not exists"
                 )
             file_data = toml.load(filename)
@@ -104,16 +104,16 @@ class ConfigFile:
             The configuration data for the requested profile.
 
         Raises:
-            AudibleCliException: If profile does not exists.
+            AudibleCliError: If profile does not exists.
         """
         if not self.has_profile(name):
-            raise AudibleCliException(f"Profile {name} does not exists")
+            raise AudibleCliError(f"Profile {name} does not exists")
         return self.data["profile"][name]
 
     @property
     def primary_profile(self) -> str:
         if "primary_profile" not in self.app_config:
-            raise AudibleCliException("No primary profile set in config")
+            raise AudibleCliError("No primary profile set in config")
         return self.app_config["primary_profile"]
 
     def get_profile_option(
@@ -190,13 +190,13 @@ class ConfigFile:
             write_config: If ``True``, save the config to file
 
         Raises:
-            AudibleCliException: If profile does not exists.
+            AudibleCliError: If profile does not exists.
 
         Note:
             Does not delete the auth file.
         """
         if not self.has_profile(name):
-            raise AudibleCliException(f"Profile {name} does not exists")
+            raise AudibleCliError(f"Profile {name} does not exists")
 
         del self.data["profile"][name]
 
@@ -279,7 +279,7 @@ class Session:
             message = (
                 "No profile provided and primary profile not set properly in config."
             )
-            raise AudibleCliException(message)
+            raise AudibleCliError(message)
         return profile
 
     def get_auth_for_profile(
@@ -300,7 +300,7 @@ class Session:
             The authenticator for the profile.
 
         Raises:
-            AudibleCliException: If profile not found.
+            AudibleCliError: If profile not found.
             Abort: If a password is needed but not provided.
         """
         if profile in self._auths:
@@ -308,7 +308,7 @@ class Session:
 
         if not self.config.has_profile(profile):
             message = "Provided profile not found in config."
-            raise AudibleCliException(message)
+            raise AudibleCliError(message)
 
         auth_file = self.config.get_profile_option(profile, "auth_file")
         country_code = self.config.get_profile_option(profile, "country_code")

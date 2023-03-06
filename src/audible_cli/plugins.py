@@ -40,7 +40,7 @@ def from_folder(plugin_dir: Union[str, pathlib.Path]):
                 mod = import_module(mod_name)
                 name = mod_name[4:] if mod.cli.name == "cli" else mod.cli.name
                 group.add_command(mod.cli, name=name)
-            except Exception:  # noqa
+            except Exception:
                 # Catch this so a busted plugin doesn't take down the CLI.
                 # Handled by registering a dummy command that does nothing
                 # other than explain the error.
@@ -73,7 +73,7 @@ def from_entry_point(entry_point_group: Generator):
         for entry_point in entry_point_group or ():
             try:
                 group.add_command(entry_point.load())
-            except Exception:  # noqa
+            except Exception:
                 # Catch this so a busted plugin doesn't take down the CLI.
                 # Handled by registering a dummy command that does nothing
                 # other than explain the error.
