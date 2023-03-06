@@ -54,8 +54,7 @@ class ConfigFile:
                 )
             file_data = toml.load(filename)
             logger.debug(
-                f"Config loaded from "
-                f"{click.format_filename(filename, shorten=True)}"
+                "Config loaded from %s", click.format_filename(filename, shorten=True)
             )
 
         config_data.update(file_data)
@@ -177,7 +176,7 @@ class ConfigFile:
         if is_primary:
             self.data["APP"]["primary_profile"] = name
 
-        logger.info(f"Profile {name} added to config")
+        logger.info("Profile %s added to config", name)
 
         if write_config:
             self.write_config()
@@ -200,7 +199,7 @@ class ConfigFile:
 
         del self.data["profile"][name]
 
-        logger.info(f"Profile {name} removed from config")
+        logger.info("Profile %s removed from config", name)
 
         if write_config:
             self.write_config()
@@ -220,7 +219,7 @@ class ConfigFile:
         toml.dump(self.data, f.open("w"))
 
         click_f = click.format_filename(f, shorten=True)
-        logger.info(f"Config written to {click_f}")
+        logger.info("Config written to %s", click_f)
 
 
 class Session:
@@ -233,9 +232,9 @@ class Session:
         self._app_dir: pathlib.Path = get_app_dir()
         self._plugin_dir: pathlib.Path = get_plugin_dir()
 
-        logger.debug(f"Audible-cli version: {__version__}")
-        logger.debug(f"App dir: {click.format_filename(self.app_dir)}")
-        logger.debug(f"Plugin dir: {click.format_filename(self.plugin_dir)}")
+        logger.debug("Audible-cli version: %s", __version__)
+        logger.debug("App dir: %s", click.format_filename(self.app_dir))
+        logger.debug("Plugin dir: %s", click.format_filename(self.plugin_dir))
 
     @property
     def params(self):
@@ -332,7 +331,7 @@ class Session:
                     raise click.Abort() from None
 
         click_f = click.format_filename(auth_file, shorten=True)
-        logger.debug(f"Auth file {click_f} for profile {profile} loaded.")
+        logger.debug("Auth file %s for profile %s loaded.", click_f, profile)
 
         self._auths[profile] = auth
         return auth

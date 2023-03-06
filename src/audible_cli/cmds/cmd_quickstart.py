@@ -156,10 +156,10 @@ def cli(session):
     config = ConfigFile(config_file, file_exists=False)
     if config_file.is_file():
         m = (
-            f"Config file {config_file} already exists. Quickstart will "
-            f"not overwrite existing files."
+            "Config file %s already exists. Quickstart will "
+            "not overwrite existing files."
         )
-        logger.error(m)
+        logger.error(m, config_file)
         raise click.Abort()
 
     d = ask_user(config)
