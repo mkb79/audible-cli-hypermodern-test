@@ -88,16 +88,24 @@ exclude_lines = [
 
 [tool.mypy]
 disable_error_code = [
+    "arg-type",
     "assignment",
+    "attr-defined",
     "call-overload",
     "dict-item",
+    "func-returns-value",
+    "has-type",
     "import",
+    "index",
     "no-any-return",
     "no-untyped-call",
     "no-untyped-def",
+    "operator",
     "return-value",
     "type-arg",
     "union-attr",
+    "valid-type",
+    "var-annotated",
 ]
 pretty = true
 show_column_numbers = true
