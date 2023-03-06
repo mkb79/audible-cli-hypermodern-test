@@ -114,10 +114,7 @@ async def export_wishlist(client, **params):
     prepared_wishlist.sort(key=lambda x: x["asin"])
 
     if output_format in ("tsv", "csv"):
-        if output_format == "csv":
-            dialect = "excel"
-        else:
-            dialect = "excel-tab"
+        dialect = "excel" if output_format == "csv" else "excel-tab"
 
         headers = (
             "asin",

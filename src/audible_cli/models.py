@@ -121,12 +121,15 @@ class BaseItem:
             return f"https://www.audible.{domain}/companion-file/{self.asin}"
 
     def is_parent_podcast(self):
-        if "content_delivery_type" in self and "content_type" in self:
-            if (
+        return bool(
+            "content_delivery_type" in self
+            and "content_type" in self
+            and (
                 self.content_delivery_type in ("Periodical", "PodcastParent")
                 or self.content_type == "Podcast"
-            ) and self.has_children:
-                return True
+            )
+            and self.has_children
+        )
 
     def is_published(self):
         if self.publication_datetime is not None:
@@ -217,13 +220,10 @@ class LibraryItem(BaseItem):
             self.is_parent_podcast()
             and "episode_count" in self
             and self.episode_count is not None
-        ):
-            if int(self.episode_count) != len(children):
-                if "response_groups" in request_params:
-                    request_params.pop("response_groups")
-                children = await Catalog.from_api(
-                    api_client=self._client, **request_params
-                )
+        ) and int(self.episode_count) != len(children):
+            if "response_groups" in request_params:
+                request_params.pop("response_groups")
+            children = await Catalog.from_api(api_client=self._client, **request_params)
 
         for child in children:
             child._parent = self
@@ -434,7 +434,7 @@ class BaseList:
             return None
 
     def has_asin(self, asin):
-        return True if self.get_item_by_asin(asin) else False
+        return bool(self.get_item_by_asin(asin))
 
     def search_item_by_title(self, search_title, p=80):
         match = []

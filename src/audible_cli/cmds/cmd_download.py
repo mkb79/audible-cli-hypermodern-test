@@ -148,11 +148,7 @@ class DownloadCounter:
         }
 
     def has_downloads(self):
-        for v in self.as_dict().values():
-            if v > 0:
-                return True
-
-        return False
+        return any(v > 0 for v in self.as_dict().values())
 
 
 counter = DownloadCounter()
@@ -367,10 +363,7 @@ async def download_aaxc(
         if is_aycl:
             counter.count_aycl_voucher()
 
-    if codec.lower() == "mpeg":
-        ext = "mp3"
-    else:
-        ext = "aaxc"
+    ext = "mp3" if codec.lower() == "mpeg" else "aaxc"
 
     filepath = pathlib.Path(output_dir) / f"{base_filename}-{codec}.{ext}"
     lr_file = filepath.with_suffix(".voucher")
