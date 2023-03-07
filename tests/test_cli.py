@@ -23,12 +23,12 @@ def test_cli_succeeds(runner: CliRunner) -> None:
     assert result.exit_code == 0
 
 
-def test_quickstart_succeeds(runner: CliRunner, tmp_path: "pathlib.Path", mocker) -> None:
+def test_quickstart_succeeds(
+    runner: CliRunner, tmp_path: "pathlib.Path", mocker
+) -> None:
     """It exits with a status code of zero."""
     mocker.patch("audible_cli.cmds.cmd_quickstart.build_auth_file")
-    env = {
-        "AUDIBLE_CONFIG_DIR": str(tmp_path.resolve())
-    }
+    env = {"AUDIBLE_CONFIG_DIR": str(tmp_path.resolve())}
     input_ = "\n".join(
         [
             "\r",  # use default for the name of the primary profile
